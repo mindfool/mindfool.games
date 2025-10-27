@@ -127,15 +127,17 @@ The spec repo contains:
 
 ---
 
-## Contributing
+## License
 
-This project is currently in early development. Contributions welcome after MVP release.
+Copyright © 2025 Simon Smaluhn. All Rights Reserved.
+
+This is proprietary software. See [LICENSE](./LICENSE) for details.
 
 ---
 
-## License
+## Contributing
 
-TBD
+This is a private project currently in active development. Not accepting external contributions at this time.
 
 ---
 
