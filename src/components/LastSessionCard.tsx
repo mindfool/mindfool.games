@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   title: {
-    ...TYPOGRAPHY.heading3,
+    ...TYPOGRAPHY.heading2,
     color: COLORS.textPrimary,
   },
   time: {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   statValue: {
-    ...TYPOGRAPHY.displaySmall,
+    ...TYPOGRAPHY.displayMedium,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },

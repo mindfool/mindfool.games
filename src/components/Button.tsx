@@ -16,18 +16,18 @@ export function Button({
   disabled = false,
   fullWidth = false,
 }: ButtonProps) {
-  const buttonStyle: ViewStyle[] = [
+  const buttonStyle = [
     styles.button,
     variant === 'primary' ? styles.primary : styles.secondary,
     disabled && styles.disabled,
     fullWidth && styles.fullWidth,
-  ];
+  ].filter(Boolean);
 
-  const textStyle: TextStyle[] = [
+  const textStyle = [
     styles.text,
     variant === 'primary' ? styles.primaryText : styles.secondaryText,
     disabled && styles.disabledText,
-  ];
+  ].filter(Boolean);
 
   return (
     <TouchableOpacity
