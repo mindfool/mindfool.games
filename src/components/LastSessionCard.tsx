@@ -7,7 +7,7 @@ interface LastSessionCardProps {
 }
 
 export function LastSessionCard({ session }: LastSessionCardProps) {
-  const improvement = -session.delta; // Negative delta = improvement
+  const improvement = session.delta; // Positive delta = improvement (higher score = calmer)
   const daysAgo = Math.floor(
     (Date.now() - new Date(session.timestamp).getTime()) / (1000 * 60 * 60 * 24)
   );

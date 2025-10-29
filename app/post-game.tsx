@@ -32,7 +32,7 @@ export default function PostGameScreen() {
   };
 
   const delta = preScore !== null ? postScore - preScore : 0;
-  const improvement = -delta; // Negative delta = improvement
+  const improvement = delta; // Positive delta = improvement (higher score = calmer)
 
   const getDeltaMessage = () => {
     if (improvement >= 4) return `Wow! You feel ${improvement} points calmer! ✨`;

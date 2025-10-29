@@ -166,10 +166,10 @@ export const SCATTER_LABELS = [
 
 // Delta message thresholds
 export const DELTA_THRESHOLDS = {
-  majorImprovement: -4, // Delta <= -4
-  improvement: -2,      // Delta -3 to -2
-  slightImprovement: -1, // Delta -1
+  majorImprovement: 4,  // Delta >= +4 (much calmer)
+  improvement: 2,       // Delta +2 to +3
+  slightImprovement: 1, // Delta +1
   neutral: 0,           // Delta 0
-  slightWorse: 1,       // Delta +1
-  worse: 2,             // Delta >= +2
+  slightWorse: -1,      // Delta -1 (slightly more scattered)
+  worse: -2,            // Delta <= -2
 } as const;
