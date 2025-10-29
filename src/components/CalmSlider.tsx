@@ -46,11 +46,11 @@ export function CalmSlider({ value, onChange, question }: CalmSliderProps) {
     transform: [{ translateX: position.value }],
   }));
 
-  // Get color based on value
+  // Get color based on value (0 = scattered, 10 = calm)
   const getValueColor = (val: number) => {
-    if (val <= 2) return COLORS.calm;
-    if (val <= 6) return COLORS.neutral;
-    return COLORS.scattered;
+    if (val <= 3) return COLORS.scattered;
+    if (val <= 7) return COLORS.neutral;
+    return COLORS.calm;
   };
 
   const label = SCATTER_LABELS[value];
@@ -75,8 +75,8 @@ export function CalmSlider({ value, onChange, question }: CalmSliderProps) {
 
         {/* Labels */}
         <View style={styles.trackLabels}>
-          <Text style={styles.trackLabel}>Very Calm</Text>
           <Text style={styles.trackLabel}>Very Scattered</Text>
+          <Text style={styles.trackLabel}>Very Calm</Text>
         </View>
       </View>
 

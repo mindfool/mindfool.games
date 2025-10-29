@@ -151,17 +151,17 @@ export const BREATHING_CIRCLE = {
 
 // Calmness scale labels (0-10)
 export const SCATTER_LABELS = [
-  "Very calm",        // 0
-  "Very calm",        // 1
-  "Calm",             // 2
-  "Somewhat scattered", // 3
-  "Somewhat scattered", // 4
-  "Scattered",        // 5
-  "Scattered",        // 6
-  "Very scattered",   // 7
-  "Very scattered",   // 8
-  "Extremely scattered", // 9
-  "Extremely scattered", // 10
+  "Extremely scattered", // 0
+  "Very scattered",      // 1
+  "Very scattered",      // 2
+  "Scattered",           // 3
+  "Scattered",           // 4
+  "Somewhat scattered",  // 5
+  "Somewhat scattered",  // 6
+  "Calm",                // 7
+  "Calm",                // 8
+  "Very calm",           // 9
+  "Very calm",           // 10
 ] as const;
 
 // Delta message thresholds
