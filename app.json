@@ -28,8 +28,13 @@
     },
     "platforms": [
       "ios",
-      "android"
+      "android",
+      "web"
     ],
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/icon.png"
+    },
     "plugins": [
       "expo-router"
     ],
