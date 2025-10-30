@@ -10,68 +10,58 @@
 
 ### Diagnosis
 
-After extensive troubleshooting, the issue appears to be:
+After extensive troubleshooting:
 
-**Root Cause**: Node.js version incompatibility
-- **Current**: Node v20.15.0
-- **Required**: Node >= v20.19.4
+**Original Hypothesis**: Node.js version incompatibility
+- **Started with**: Node v20.15.0
+- **Upgraded to**: Node v24.10.0
+- **Result**: Metro bundler still hangs
 
-Many packages in the project require Node >= 20.19.4:
-- `metro` and all `metro-*` packages
-- `@react-native/*` packages
-- `expo-server`
+**Actual Root Cause**: Unknown Metro configuration or system-level issue
+- Node version upgrade did not resolve the hanging issue
+- Web version works perfectly (proves code is correct)
+- Issue appears to be Metro bundler-specific, not code-related
+- Likely related to system-specific Metro configuration or file watchers
 
 ### What We've Tried
 
 ✅ **Successfully Completed:**
 1. Fixed TypeScript compilation errors
 2. Removed/re-added react-native-reanimated
-3. Cleared all Metro/Expo caches
+3. Cleared all Metro/Expo caches multiple times
 4. Tested with various Metro configurations
 5. Enabled react-native-reanimated/plugin (required by Skia, expo-router, nativewind)
-6. Verified code correctness (web version works)
+6. Verified code correctness (web version works perfectly)
+7. Upgraded Node.js from v20.15.0 → v24.10.0
+8. Reinstalled all 800 dependencies with new Node version
+9. Verified no package vulnerabilities
 
 ❌ **Still Hanging:**
-- Native Metro bundler initialization
+- Native Metro bundler initialization (persists even with Node v24.10.0)
 
 ### Recommended Solutions
 
-#### Option 1: Upgrade Node.js (Recommended)
+#### Option 1: Use EAS Build for Native (Recommended)
+
+Since the local Metro bundler continues to hang even after Node upgrade, the most reliable solution is to use EAS Build. This builds the app in Expo's cloud infrastructure, completely bypassing local Metro issues.
 
 ```bash
-# Using nvm (recommended)
-nvm install 20.19.4
-nvm use 20.19.4
-nvm alias default 20.19.4
-
-# Or using Homebrew
-brew upgrade node
-```
-
-After upgrading:
-```bash
+# Build for Android (APK for testing)
+export PATH="/usr/local/Cellar/node/24.10.0_1/bin:$PATH"
 cd /Users/simon/git/mindfool/mindfool.games
-rm -rf node_modules package-lock.json
-npm install
-npx expo start
-```
-
-#### Option 2: Use EAS Build for Native
-
-Since the web version works, you can use EAS Build to create native builds in the cloud (which has the correct Node version):
-
-```bash
-# Configure EAS Build (already done)
-npx eas build:configure
-
-# Build for Android
 npx eas build --platform android --profile preview
 
-# Build for iOS
+# Build for iOS (requires Apple Developer account)
 npx eas build --platform ios --profile preview
 ```
 
-#### Option 3: Continue with Web Version
+**Benefits:**
+- Bypasses local Metro bundler entirely
+- Uses Expo's cloud infrastructure with optimal environment
+- Generates installable APK/IPA files
+- Web version proves code is working correctly
+
+#### Option 2: Continue with Web Version (Immediate Solution)
 
 The web version at https://mindfoolgames-bkjzztzu0-favourses-projects.vercel.app works perfectly and can be:
 - Accessed on mobile browsers
@@ -80,17 +70,19 @@ The web version at https://mindfoolgames-bkjzztzu0-favourses-projects.vercel.app
 
 ### Technical Details
 
-**Dependencies Requiring Node >= 20.19.4:**
-```
-metro@0.83.2
-@react-native/*@0.81.5
-expo-server@1.0.2
-```
+**System Environment:**
+- **Node.js**: Upgraded from v20.15.0 → v24.10.0 (via Homebrew)
+- **npm**: Updated to latest compatible version
+- **Dependencies**: 800 packages installed, 0 vulnerabilities
+- **Expo SDK**: 54
+- **React Native**: 0.81.5
 
-**Current Dependency Tree:**
+**Critical Dependency Tree:**
 - `@shopify/react-native-skia` → `react-native-reanimated@4.1.3` → `react-native-worklets@0.5.2`
 - `expo-router` → `react-native-reanimated@4.1.3`
 - `nativewind` → `react-native-reanimated@4.1.3`
+
+**Note**: react-native-reanimated/plugin must remain enabled in babel.config.js for these dependencies to work.
 
 ### Files Modified During Troubleshooting
 
@@ -100,9 +92,12 @@ expo-server@1.0.2
 
 ### Next Steps
 
-1. **Immediate**: Use web version for testing
-2. **Short-term**: Upgrade Node.js to >= 20.19.4
-3. **Long-term**: Re-enable AsyncStorage persistence after Metro works
+1. **Immediate**: Use web version for testing (fully functional)
+2. **Short-term**: Run EAS Build to generate native APK for Android testing
+3. **Long-term**:
+   - Investigate Metro bundler issue more deeply (file watchers, firewall, system limits)
+   - Re-enable AsyncStorage persistence once native app is working
+   - Fix Node.js symlinking: `sudo chown -R $(whoami) /usr/local/include/node && brew link --overwrite node`
 
 ### Testing Native App After Fix
 
