@@ -26,6 +26,12 @@ export default function HomeScreen() {
       case 'number-bubbles':
         router.push('/number-bubbles');
         break;
+      case 'gong-listening':
+        router.push('/gong-listening');
+        break;
+      case 'counting-ladder':
+        router.push('/counting-ladder');
+        break;
       default:
         router.push('/game');
     }
@@ -108,33 +114,55 @@ export default function HomeScreen() {
                 <Text style={styles.modeTitle}>Number Bubbles</Text>
                 <Text style={styles.modeDescription}>Tap 1 to 10</Text>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeCard,
+                  selectedMode === 'gong-listening' && styles.modeCardSelected
+                ]}
+                onPress={() => setSelectedMode('gong-listening')}
+              >
+                <Text style={styles.modeEmoji}>🔔</Text>
+                <Text style={styles.modeTitle}>Gong Listening</Text>
+                <Text style={styles.modeDescription}>Listen deeply</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeCard,
+                  selectedMode === 'counting-ladder' && styles.modeCardSelected
+                ]}
+                onPress={() => setSelectedMode('counting-ladder')}
+              >
+                <Text style={styles.modeEmoji}>🪜</Text>
+                <Text style={styles.modeTitle}>Counting Ladder</Text>
+                <Text style={styles.modeDescription}>Count with breath</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
           <View style={styles.spacer} />
 
           <Button
-            title={selectedMode === 'walking-meditation' ? 'Start Walking' : 'Start Breathing'}
+            title={
+              selectedMode === 'walking-meditation' ? 'Start Walking' :
+              selectedMode === 'number-bubbles' ? 'Start Counting' :
+              selectedMode === 'gong-listening' ? 'Start Listening' :
+              selectedMode === 'counting-ladder' ? 'Start Breathing' :
+              'Start Session'
+            }
             onPress={handleStart}
             fullWidth
           />
 
           {/* Info Card */}
           <View style={styles.infoCard}>
-            <Text style={styles.infoEmoji}>🎈</Text>
-            <Text style={styles.infoTitle}>2-3 minute session</Text>
+            <Text style={styles.infoEmoji}>✨</Text>
+            <Text style={styles.infoTitle}>5 mindfulness practices</Text>
             <Text style={styles.infoText}>
-              Follow the balloon's breathing rhythm to find calm and focus
+              Each session is 2-3 minutes. Find what works for you.
             </Text>
           </View>
-        </View>
-
-        {/* Footer - Coming Soon */}
-        <View style={styles.footer}>
-          <Text style={styles.footerLabel}>Coming Soon:</Text>
-          <Text style={styles.footerText}>
-            Walking Meditation • Gong Listening • Number Bubbles • Counting Ladder
-          </Text>
         </View>
         </ScrollView>
       </SafeAreaView>
