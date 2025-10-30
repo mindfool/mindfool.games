@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { CalmSlider } from '../src/components/CalmSlider';
 import { Button } from '../src/components/Button';
@@ -20,11 +21,15 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+    <LinearGradient
+      colors={['#FFFFFF', '#F5F7FA', '#E8F4F8']}
+      style={styles.gradient}
+    >
+      <SafeAreaView style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>
@@ -69,15 +74,18 @@ export default function HomeScreen() {
             Walking Meditation • Gong Listening • Number Bubbles • Counting Ladder
           </Text>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: COLORS.backgroundLight,
   },
   scrollContent: {
     flexGrow: 1,
