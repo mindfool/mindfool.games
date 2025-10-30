@@ -32,6 +32,9 @@ export default function HomeScreen() {
         >
         {/* Header */}
         <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Text style={styles.logoEmoji}>🧘</Text>
+          </View>
           <Text style={styles.title}>
             MindFool<Text style={styles.titleAccent}>.Games</Text>
           </Text>
@@ -61,10 +64,14 @@ export default function HomeScreen() {
             fullWidth
           />
 
-          {/* Info Text */}
-          <Text style={styles.infoText}>
-            A 2-3 minute breathing session to help you find calm and focus.
-          </Text>
+          {/* Info Card */}
+          <View style={styles.infoCard}>
+            <Text style={styles.infoEmoji}>🎈</Text>
+            <Text style={styles.infoTitle}>2-3 minute session</Text>
+            <Text style={styles.infoText}>
+              Follow the balloon's breathing rhythm to find calm and focus
+            </Text>
+          </View>
         </View>
 
         {/* Footer - Coming Soon */}
@@ -92,14 +99,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
   },
   header: {
-    paddingTop: SPACING['2xl'],
-    paddingBottom: SPACING.xl,
+    paddingTop: SPACING.xl,
+    paddingBottom: SPACING['2xl'],
     alignItems: 'center',
+  },
+  logoContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  logoEmoji: {
+    fontSize: 48,
   },
   title: {
     ...TYPOGRAPHY.displayLarge,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
+    fontWeight: '700',
   },
   titleAccent: {
     color: COLORS.primary,
@@ -107,6 +132,7 @@ const styles = StyleSheet.create({
   subtitle: {
     ...TYPOGRAPHY.bodyLarge,
     color: COLORS.textSecondary,
+    fontWeight: '400',
   },
   content: {
     flex: 1,
@@ -117,12 +143,32 @@ const styles = StyleSheet.create({
   spacer: {
     height: SPACING['2xl'],
   },
+  infoCard: {
+    marginTop: SPACING.lg,
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: SPACING.lg,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  infoEmoji: {
+    fontSize: 40,
+    marginBottom: SPACING.sm,
+  },
+  infoTitle: {
+    ...TYPOGRAPHY.heading2,
+    color: COLORS.textPrimary,
+    fontWeight: '600',
+    marginBottom: SPACING.xs,
+  },
   infoText: {
     ...TYPOGRAPHY.bodyMedium,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    marginTop: SPACING.lg,
-    paddingHorizontal: SPACING.md,
   },
   footer: {
     paddingVertical: SPACING.xl,
