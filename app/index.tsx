@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { CalmSlider } from '../src/components/CalmSlider';
@@ -8,16 +8,22 @@ import { LastSessionCard } from '../src/components/LastSessionCard';
 import { useSessionStore } from '../src/stores/sessionStore';
 import { useHistoryStore } from '../src/stores/historyStore';
 import { COLORS, SPACING, TYPOGRAPHY } from '../src/constants/tokens';
+import { GameMode } from '../src/types';
 
 export default function HomeScreen() {
   const router = useRouter();
   const [calmScore, setCalmScore] = useState(5); // Default to middle
+  const [selectedMode, setSelectedMode] = useState<GameMode>('balloon-breathing');
   const startSession = useSessionStore((state) => state.startSession);
   const lastSession = useHistoryStore((state) => state.getLastSession());
 
   const handleStart = () => {
-    startSession(calmScore);
-    router.push('/game');
+    startSession(calmScore, selectedMode);
+    if (selectedMode === 'walking-meditation') {
+      router.push('/walking-meditation');
+    } else {
+      router.push('/game');
+    }
   };
 
   return (
@@ -58,8 +64,40 @@ export default function HomeScreen() {
 
           <View style={styles.spacer} />
 
+          {/* Game Mode Selection */}
+          <View style={styles.modeSelection}>
+            <Text style={styles.modeSelectionTitle}>Choose a practice:</Text>
+            <View style={styles.modeCards}>
+              <TouchableOpacity
+                style={[
+                  styles.modeCard,
+                  selectedMode === 'balloon-breathing' && styles.modeCardSelected
+                ]}
+                onPress={() => setSelectedMode('balloon-breathing')}
+              >
+                <Text style={styles.modeEmoji}>🎈</Text>
+                <Text style={styles.modeTitle}>Balloon Breathing</Text>
+                <Text style={styles.modeDescription}>Follow the rhythm</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeCard,
+                  selectedMode === 'walking-meditation' && styles.modeCardSelected
+                ]}
+                onPress={() => setSelectedMode('walking-meditation')}
+              >
+                <Text style={styles.modeEmoji}>🚶</Text>
+                <Text style={styles.modeTitle}>Walking Meditation</Text>
+                <Text style={styles.modeDescription}>Count your steps</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.spacer} />
+
           <Button
-            title="Start Balloon Breathing"
+            title={selectedMode === 'walking-meditation' ? 'Start Walking' : 'Start Breathing'}
             onPress={handleStart}
             fullWidth
           />
@@ -186,5 +224,55 @@ const styles = StyleSheet.create({
   },
   lastSessionContainer: {
     marginTop: SPACING.md,
+  },
+  modeSelection: {
+    width: '100%',
+    marginTop: SPACING.lg,
+  },
+  modeSelectionTitle: {
+    ...TYPOGRAPHY.heading2,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.md,
+    fontWeight: '600',
+  },
+  modeCards: {
+    flexDirection: 'row',
+    gap: SPACING.md,
+  },
+  modeCard: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    padding: SPACING.md,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  modeCardSelected: {
+    borderColor: COLORS.primary,
+    backgroundColor: '#F0F9FF',
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.2,
+  },
+  modeEmoji: {
+    fontSize: 32,
+    marginBottom: SPACING.xs,
+  },
+  modeTitle: {
+    ...TYPOGRAPHY.bodyMedium,
+    color: COLORS.textPrimary,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  modeDescription: {
+    ...TYPOGRAPHY.bodySmall,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
   },
 });

@@ -10,7 +10,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   endTime: null,
   mode: 'balloon-breathing',
 
-  startSession: (preScore: number) => {
+  startSession: (preScore: number, mode: GameMode = 'balloon-breathing') => {
     const sessionId = Date.now().toString();
     set({
       sessionId,
@@ -18,6 +18,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       postScore: null,
       startTime: new Date(),
       endTime: null,
+      mode,
     });
   },
 
