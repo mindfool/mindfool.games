@@ -19,10 +19,15 @@ export default function HomeScreen() {
 
   const handleStart = () => {
     startSession(calmScore, selectedMode);
-    if (selectedMode === 'walking-meditation') {
-      router.push('/walking-meditation');
-    } else {
-      router.push('/game');
+    switch (selectedMode) {
+      case 'walking-meditation':
+        router.push('/walking-meditation');
+        break;
+      case 'number-bubbles':
+        router.push('/number-bubbles');
+        break;
+      default:
+        router.push('/game');
     }
   };
 
@@ -90,6 +95,18 @@ export default function HomeScreen() {
                 <Text style={styles.modeEmoji}>🚶</Text>
                 <Text style={styles.modeTitle}>Walking Meditation</Text>
                 <Text style={styles.modeDescription}>Count your steps</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeCard,
+                  selectedMode === 'number-bubbles' && styles.modeCardSelected
+                ]}
+                onPress={() => setSelectedMode('number-bubbles')}
+              >
+                <Text style={styles.modeEmoji}>🔢</Text>
+                <Text style={styles.modeTitle}>Number Bubbles</Text>
+                <Text style={styles.modeDescription}>Tap 1 to 10</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -237,10 +254,13 @@ const styles = StyleSheet.create({
   },
   modeCards: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: SPACING.md,
+    justifyContent: 'center',
   },
   modeCard: {
-    flex: 1,
+    width: '47%',
+    minWidth: 140,
     backgroundColor: COLORS.white,
     borderRadius: 20,
     padding: SPACING.lg,
