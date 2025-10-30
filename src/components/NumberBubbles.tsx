@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Animated, Vibration } from 'react-native';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -71,18 +71,21 @@ export function NumberBubbles({
 
   const handleBubbleTap = (number: number) => {
     if (number === currentTarget) {
-      // Correct tap
+      // Correct tap - success haptic
+      Vibration.vibrate(10);
       setStreak(prev => prev + 1);
 
       if (currentTarget === 10) {
-        // Completed sequence, reset to 1
+        // Completed sequence - stronger haptic
+        Vibration.vibrate([0, 10, 50, 10]);
         setCurrentTarget(1);
         generateBubbles(); // Regenerate positions for new round
       } else {
         setCurrentTarget(prev => prev + 1);
       }
     } else {
-      // Wrong tap
+      // Wrong tap - error haptic (longer vibration)
+      Vibration.vibrate([0, 50, 100, 50]);
       setErrors(prev => prev + 1);
       setStreak(0);
       setCurrentTarget(1); // Reset to 1 on error
