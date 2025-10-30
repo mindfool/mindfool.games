@@ -250,10 +250,9 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   content: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: SPACING.xl,
+    paddingBottom: SPACING['2xl'],
   },
   spacer: {
     height: SPACING['2xl'],

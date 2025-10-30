@@ -36,7 +36,12 @@ export function BreathingVideo({ duration = 180, onComplete, minDuration = 10 }:
     }, 1000);
 
     return () => {
+      // Clean up timer
       if (intervalRef.current) clearInterval(intervalRef.current);
+
+      // Stop and unload video when component unmounts
+      videoRef.current?.stopAsync();
+      videoRef.current?.unloadAsync();
     };
   }, [duration, onComplete]);
 
