@@ -56,6 +56,15 @@ export default function HomeScreen() {
             MindFool<Text style={styles.titleAccent}>.Games</Text>
           </Text>
           <Text style={styles.subtitle}>Your daily mental reset</Text>
+
+          {/* History Button */}
+          <TouchableOpacity
+            style={styles.historyButton}
+            onPress={() => router.push('/history')}
+          >
+            <Text style={styles.historyEmoji}>📊</Text>
+            <Text style={styles.historyButtonText}>View History</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Last Session Card (if exists) */}
@@ -185,6 +194,29 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.xl,
     paddingBottom: SPACING['2xl'],
     alignItems: 'center',
+  },
+  historyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: 12,
+    marginTop: SPACING.md,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  historyEmoji: {
+    fontSize: 20,
+  },
+  historyButtonText: {
+    ...TYPOGRAPHY.bodyMedium,
+    color: COLORS.primary,
+    fontWeight: '600',
   },
   logoContainer: {
     width: 80,
