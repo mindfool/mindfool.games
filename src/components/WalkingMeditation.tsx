@@ -16,7 +16,9 @@ export function WalkingMeditation({
   minDuration = 10
 }: WalkingMeditationProps) {
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [stepCount, setStepCount] = useState(0);
+  const [currentCount, setCurrentCount] = useState(1);
+  const [currentFoot, setCurrentFoot] = useState<'left' | 'right'>('left');
+  const [cycles, setCycles] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -39,12 +41,24 @@ export function WalkingMeditation({
   }, [duration, onComplete]);
 
   const handleStepTap = () => {
-    // Visual and haptic feedback for each step
-    setStepCount((prev) => prev + 1);
     setIsActive(true);
 
     // Subtle haptic feedback
     Vibration.vibrate(10);
+
+    if (currentCount === 10) {
+      // At 10, switch foot and reset to 1
+      setCurrentFoot(prev => prev === 'left' ? 'right' : 'left');
+      setCurrentCount(1);
+
+      // Increment cycle counter when switching from right back to left
+      if (currentFoot === 'right') {
+        setCycles(prev => prev + 1);
+      }
+    } else {
+      // Increment count for current foot
+      setCurrentCount(prev => prev + 1);
+    }
 
     // Reset active state after animation
     setTimeout(() => setIsActive(false), 150);
@@ -65,6 +79,13 @@ export function WalkingMeditation({
 
   return (
     <View style={styles.container}>
+      {/* Current Foot Display */}
+      <View style={styles.footLabelContainer}>
+        <Text style={styles.footLabel}>
+          {currentFoot === 'left' ? '👣 LEFT FOOT' : 'RIGHT FOOT 👣'}
+        </Text>
+      </View>
+
       {/* Main Step Counter Circle */}
       <TouchableOpacity
         style={[
@@ -74,24 +95,30 @@ export function WalkingMeditation({
         onPress={handleStepTap}
         activeOpacity={0.8}
       >
-        <Text style={styles.stepCountLabel}>Steps</Text>
-        <Text style={styles.stepCount}>{stepCount}</Text>
-        <Text style={styles.tapInstruction}>Tap for each step</Text>
+        <Text style={styles.stepCountLabel}>Count</Text>
+        <Text style={styles.stepCount}>{currentCount}</Text>
+        <Text style={styles.tapInstruction}>Tap when foot touches ground</Text>
       </TouchableOpacity>
 
-      {/* Timer Display */}
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerLabel}>Time Elapsed</Text>
-        <Text style={styles.timerValue}>{formatTime(timeElapsed)}</Text>
+      {/* Stats */}
+      <View style={styles.statsContainer}>
+        <View style={styles.statBox}>
+          <Text style={styles.statLabel}>Cycles</Text>
+          <Text style={styles.statValue}>{cycles}</Text>
+        </View>
+        <View style={styles.statBox}>
+          <Text style={styles.statLabel}>Time</Text>
+          <Text style={styles.statValue}>{formatTime(timeElapsed)}</Text>
+        </View>
       </View>
 
       {/* Instructions */}
       <View style={styles.instructionsContainer}>
         <Text style={styles.instructionsText}>
-          Walk slowly and mindfully
+          Focus on {currentFoot} foot until you reach 10
         </Text>
         <Text style={styles.instructionsSubtext}>
-          Count each step • Focus on the movement
+          At 10, switch to {currentFoot === 'left' ? 'right' : 'left'} foot and start at 1
         </Text>
       </View>
 
@@ -113,6 +140,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: SPACING.xl,
+  },
+  footLabelContainer: {
+    marginBottom: SPACING.lg,
+    backgroundColor: COLORS.primary,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING['2xl'],
+    borderRadius: 24,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  footLabel: {
+    ...TYPOGRAPHY.heading2,
+    color: COLORS.white,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textAlign: 'center',
   },
   stepCircle: {
     width: SCREEN_WIDTH - (SPACING.lg * 2),
@@ -156,8 +203,12 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  timerContainer: {
+  statsContainer: {
+    flexDirection: 'row',
     marginTop: SPACING.xl,
+    gap: SPACING.md,
+  },
+  statBox: {
     alignItems: 'center',
     backgroundColor: COLORS.white,
     paddingVertical: SPACING.md,
@@ -168,13 +219,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    minWidth: 100,
   },
-  timerLabel: {
+  statLabel: {
     ...TYPOGRAPHY.bodySmall,
     color: COLORS.textSecondary,
     marginBottom: 4,
   },
-  timerValue: {
+  statValue: {
     ...TYPOGRAPHY.displayMedium,
     color: COLORS.primary,
     fontWeight: '700',
