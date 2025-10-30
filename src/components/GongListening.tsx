@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { Audio } from 'expo-av';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
 
 interface GongListeningProps {
@@ -22,9 +23,26 @@ export function GongListening({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const gongTimerRef = useRef<NodeJS.Timeout | null>(null);
   const listenStartRef = useRef<number | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const opacityAnim = useRef(new Animated.Value(0.3)).current;
+
+  // Setup audio on mount
+  useEffect(() => {
+    // Configure audio mode
+    Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+    });
+
+    // Cleanup on unmount
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Main timer
@@ -83,9 +101,43 @@ export function GongListening({
     }
   }, [isListening]);
 
+  const playGongSound = async () => {
+    try {
+      // If there's an existing sound, unload it first
+      if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+      }
+
+      // Create and play new sound
+      // TODO: Replace with actual gong sound file when available
+      // For now, this will use system sounds or you can add gong.mp3 to assets/sounds/
+      const { sound } = await Audio.Sound.createAsync(
+        // Placeholder - will need to add actual gong sound file
+        // require('../../assets/sounds/gong.mp3')
+        { uri: 'https://freesound.org/data/previews/411/411089_5121236-lq.mp3' }, // Temporary online gong sound
+        { shouldPlay: true, volume: 0.8 }
+      );
+
+      soundRef.current = sound;
+
+      // Play for ~6 seconds (typical gong resonance)
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.log('Error playing gong sound:', error);
+      // Continue without sound if there's an error
+    }
+  };
+
   const handlePressIn = () => {
     setIsListening(true);
     listenStartRef.current = Date.now();
+
+    // Play gong sound
+    playGongSound();
 
     // Start tracking listen time
     gongTimerRef.current = setInterval(() => {
