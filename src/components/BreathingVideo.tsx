@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
 
@@ -8,31 +8,42 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 interface BreathingVideoProps {
   duration?: number; // Duration in seconds (default: 3 minutes = 180s)
   onComplete?: () => void;
+  minDuration?: number; // Minimum time before allowing skip (default: 10s)
 }
 
-export function BreathingVideo({ duration = 180, onComplete }: BreathingVideoProps) {
+export function BreathingVideo({ duration = 180, onComplete, minDuration = 10 }: BreathingVideoProps) {
   const videoRef = useRef<Video>(null);
   const [timeRemaining, setTimeRemaining] = useState(duration);
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Start playing the video
     videoRef.current?.playAsync();
 
     // Timer countdown
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          clearInterval(interval);
+          if (intervalRef.current) clearInterval(intervalRef.current);
           onComplete?.();
           return 0;
         }
         return prev - 1;
       });
+      setTimeElapsed((prev) => prev + 1);
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [duration, onComplete]);
+
+  const handleCompleteEarly = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    onComplete?.();
+  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -46,6 +57,8 @@ export function BreathingVideo({ duration = 180, onComplete }: BreathingVideoPro
       videoRef.current?.replayAsync();
     }
   };
+
+  const canSkip = timeElapsed >= minDuration;
 
   return (
     <View style={styles.container}>
@@ -62,8 +75,8 @@ export function BreathingVideo({ duration = 180, onComplete }: BreathingVideoPro
       </View>
 
       <View style={styles.timerContainer}>
-        <Text style={styles.timerLabel}>Time Remaining</Text>
-        <Text style={styles.timerValue}>{formatTime(timeRemaining)}</Text>
+        <Text style={styles.timerLabel}>Time Elapsed</Text>
+        <Text style={styles.timerValue}>{formatTime(timeElapsed)}</Text>
       </View>
 
       <View style={styles.instructionsContainer}>
@@ -74,6 +87,15 @@ export function BreathingVideo({ duration = 180, onComplete }: BreathingVideoPro
           Inhale as it expands • Exhale as it contracts
         </Text>
       </View>
+
+      {canSkip && (
+        <TouchableOpacity
+          style={styles.completeButton}
+          onPress={handleCompleteEarly}
+        >
+          <Text style={styles.completeButtonText}>Complete Session</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -139,6 +161,24 @@ const styles = StyleSheet.create({
   instructionsSubtext: {
     ...TYPOGRAPHY.bodyMedium,
     color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  completeButton: {
+    marginTop: SPACING.xl,
+    backgroundColor: COLORS.primary,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING['2xl'],
+    borderRadius: 12,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  completeButtonText: {
+    ...TYPOGRAPHY.bodyLarge,
+    color: COLORS.white,
+    fontWeight: '600',
     textAlign: 'center',
   },
 });
