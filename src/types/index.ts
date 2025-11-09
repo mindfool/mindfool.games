@@ -2,7 +2,7 @@
  * Shared TypeScript types for MindFool.Games
  */
 
-export type GameMode = 'balloon-breathing' | 'walking-meditation' | 'number-bubbles' | 'gong-listening' | 'counting-ladder';
+export type GameMode = 'balloon-breathing' | 'walking-meditation' | 'number-bubbles' | 'gong-listening' | 'counting-ladder' | 'box-breathing' | '478-breathing' | 'body-scan' | 'mindful-eating' | 'loving-kindness' | 'gratitude-journal';
 
 export interface Session {
   id: string; // timestamp-based ID

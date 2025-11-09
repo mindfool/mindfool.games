@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useHistoryStore } from '../src/stores/historyStore';
-import { COLORS, SPACING, TYPOGRAPHY } from '../src/constants/tokens';
+import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
 import { GameMode } from '../src/types';
 import { useState } from 'react';
 
@@ -74,17 +74,20 @@ export default function HistoryScreen() {
 
   return (
     <LinearGradient
-      colors={['#FFFFFF', '#F5F7FA', '#E8F4F8']}
+      colors={[COLORS.backgroundLight, COLORS.background, COLORS.backgroundMedium]}
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Text style={styles.backButtonText}>← Back</Text>
+            <Text style={styles.backButtonText}>←</Text>
           </TouchableOpacity>
+          <View style={styles.headerBadge}>
+            <Text style={styles.headerEmoji}>📊</Text>
+          </View>
           <Text style={styles.title}>Your Journey</Text>
-          <View style={styles.placeholder} />
+          <Text style={styles.subtitle}>{totalSessions} sessions completed</Text>
         </View>
 
         {sessions.length === 0 ? (
@@ -225,35 +228,58 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
+    paddingTop: SPACING['2xl'],
+    paddingBottom: SPACING.xl,
+    paddingHorizontal: SPACING.xl,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.lg,
+    position: 'relative',
   },
   backButton: {
-    padding: SPACING.sm,
+    position: 'absolute',
+    left: SPACING.xl,
+    top: SPACING['2xl'],
+    width: 40,
+    height: 40,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...SHADOWS.sm,
   },
   backButtonText: {
-    ...TYPOGRAPHY.bodyLarge,
-    color: COLORS.primary,
-    fontWeight: '600',
+    fontSize: 24,
+    color: COLORS.textPrimary,
+  },
+  headerBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+    ...SHADOWS.colored,
+  },
+  headerEmoji: {
+    fontSize: 32,
   },
   title: {
-    ...TYPOGRAPHY.displayMedium,
+    ...TYPOGRAPHY.displayLarge,
+    fontSize: 32,
     color: COLORS.textPrimary,
-    fontWeight: '700',
+    fontWeight: '800',
+    marginBottom: SPACING.xs,
   },
-  placeholder: {
-    width: 60,
+  subtitle: {
+    ...TYPOGRAPHY.bodyLarge,
+    color: COLORS.textSecondary,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING['2xl'],
+    paddingHorizontal: SPACING.xl,
+    paddingBottom: SPACING['3xl'],
   },
   emptyContainer: {
     flex: 1,
@@ -301,15 +327,11 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: COLORS.white,
-    borderRadius: 16,
-    padding: SPACING.lg,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.xl,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    ...SHADOWS.md,
   },
   statValue: {
     ...TYPOGRAPHY.displayMedium,
@@ -336,17 +358,16 @@ const styles = StyleSheet.create({
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    borderRadius: 12,
-    gap: 6,
-    borderWidth: 2,
-    borderColor: 'transparent',
+    backgroundColor: COLORS.surface,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: BORDER_RADIUS.xl,
+    gap: 8,
+    ...SHADOWS.sm,
   },
   filterButtonActive: {
     backgroundColor: COLORS.primary,
-    borderColor: COLORS.primaryDark,
+    ...SHADOWS.colored,
   },
   filterEmoji: {
     fontSize: 18,
@@ -369,15 +390,11 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   sessionCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 16,
-    padding: SPACING.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    marginBottom: SPACING.md,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.xl,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.md,
   },
   sessionHeader: {
     flexDirection: 'row',

@@ -1,30 +1,44 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Vibration } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { CountingLadder } from '../src/components/CountingLadder';
+import { BoxBreathing } from '../src/components/BoxBreathing';
 import { useSessionComplete } from '../src/hooks/useSessionComplete';
-import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
+import { useSettingsStore } from '../src/stores/settingsStore';
+import { COLORS, SPACING, TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../src/constants/tokens';
 
-export default function CountingLadderScreen() {
+export default function BoxBreathingScreen() {
   const router = useRouter();
   const handleComplete = useSessionComplete();
+  const hapticFeedback = useSettingsStore((state) => state.hapticFeedback);
+
+  const handleExit = () => {
+    if (hapticFeedback) {
+      Vibration.vibrate(10);
+    }
+    router.back();
+  };
 
   return (
     <LinearGradient
-      colors={['#F0F9FF', '#F5F7FA', '#FFFFFF']}
+      colors={['#EDE9FE', '#F5F3FF', COLORS.backgroundLight]}
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
-        <TouchableOpacity style={styles.exitButton} onPress={() => router.back()}>
+        {/* Exit Button */}
+        <TouchableOpacity style={styles.exitButton} onPress={handleExit} activeOpacity={0.6}>
           <Text style={styles.exitButtonText}>✕</Text>
         </TouchableOpacity>
+
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.title}>Counting Ladder</Text>
-            <Text style={styles.subtitle}>Breath with rhythm</Text>
+            <View style={styles.headerBadge}>
+              <Text style={styles.headerEmoji}>⬜</Text>
+            </View>
+            <Text style={styles.title}>Box Breathing</Text>
+            <Text style={styles.subtitle}>Equal breathing for calm focus</Text>
           </View>
 
-          <CountingLadder
+          <BoxBreathing
             duration={180}
             onComplete={handleComplete}
           />
@@ -44,7 +58,7 @@ const styles = StyleSheet.create({
   exitButton: {
     position: 'absolute',
     top: SPACING.xl,
-    left: SPACING.lg,
+    left: SPACING.xl,
     width: 44,
     height: 44,
     borderRadius: BORDER_RADIUS.full,
@@ -61,19 +75,33 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.lg,
+    paddingHorizontal: SPACING.xl,
+    paddingTop: SPACING['2xl'],
+    paddingBottom: SPACING.xl,
   },
   header: {
     alignItems: 'center',
+    marginBottom: SPACING['2xl'],
+  },
+  headerBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: SPACING.lg,
+  },
+  headerEmoji: {
+    fontSize: 32,
   },
   title: {
     ...TYPOGRAPHY.displayLarge,
+    fontSize: 28,
     color: COLORS.textPrimary,
     textAlign: 'center',
     marginBottom: SPACING.xs,
+    fontWeight: '700',
   },
   subtitle: {
     ...TYPOGRAPHY.bodyLarge,

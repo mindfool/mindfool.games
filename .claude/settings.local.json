@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(open http://localhost:8081)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run:*)",
+      "Bash(lsof:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

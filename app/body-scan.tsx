@@ -1,17 +1,17 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { BreathingVideo } from '../src/components/BreathingVideo';
+import { BodyScan } from '../src/components/BodyScan';
 import { useSessionComplete } from '../src/hooks/useSessionComplete';
-import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
+import { COLORS, SPACING, TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../src/constants/tokens';
 
-export default function GameScreen() {
+export default function BodyScanScreen() {
   const router = useRouter();
   const handleComplete = useSessionComplete();
 
   return (
     <LinearGradient
-      colors={['#E8F4F8', '#F5F7FA', '#FFFFFF']}
+      colors={['#F3E8FF', '#FAF5FF', COLORS.backgroundLight]}
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
@@ -20,14 +20,14 @@ export default function GameScreen() {
         </TouchableOpacity>
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.title}>Balloon Breathing</Text>
-            <Text style={styles.subtitle}>Find your calm</Text>
+            <View style={styles.headerBadge}>
+              <Text style={styles.headerEmoji}>🧘‍♀️</Text>
+            </View>
+            <Text style={styles.title}>Body Scan</Text>
+            <Text style={styles.subtitle}>Progressive body awareness meditation</Text>
           </View>
 
-          <BreathingVideo
-            duration={180}
-            onComplete={handleComplete}
-          />
+          <BodyScan duration={300} onComplete={handleComplete} />
         </View>
       </SafeAreaView>
     </LinearGradient>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   exitButton: {
     position: 'absolute',
     top: SPACING.xl,
-    left: SPACING.lg,
+    left: SPACING.xl,
     width: 44,
     height: 44,
     borderRadius: BORDER_RADIUS.full,
@@ -61,19 +61,33 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.lg,
+    paddingHorizontal: SPACING.xl,
+    paddingTop: SPACING['2xl'],
+    paddingBottom: SPACING.xl,
   },
   header: {
     alignItems: 'center',
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING['2xl'],
+  },
+  headerBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+  },
+  headerEmoji: {
+    fontSize: 32,
   },
   title: {
     ...TYPOGRAPHY.displayLarge,
+    fontSize: 28,
     color: COLORS.textPrimary,
     textAlign: 'center',
     marginBottom: SPACING.xs,
+    fontWeight: '700',
   },
   subtitle: {
     ...TYPOGRAPHY.bodyLarge,

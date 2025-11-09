@@ -1,45 +1,138 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { CalmSlider } from '../src/components/CalmSlider';
-import { Button } from '../src/components/Button';
-import { LastSessionCard } from '../src/components/LastSessionCard';
+import { StreakCard } from '../src/components/StreakCard';
 import { useSessionStore } from '../src/stores/sessionStore';
 import { useHistoryStore } from '../src/stores/historyStore';
-import { COLORS, SPACING, TYPOGRAPHY } from '../src/constants/tokens';
+import { useSettingsStore } from '../src/stores/settingsStore';
+import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
 import { GameMode } from '../src/types';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+interface Practice {
+  id: GameMode;
+  title: string;
+  emoji: string;
+  color: string;
+  gradient: string[];
+  description: string;
+  route: string;
+}
+
+const PRACTICES: Practice[] = [
+  {
+    id: 'balloon-breathing',
+    title: 'Balloon',
+    emoji: '🎈',
+    color: COLORS.breathing,
+    gradient: ['#EDE9FE', '#F5F3FF'],
+    description: 'Follow the rhythm',
+    route: '/game',
+  },
+  {
+    id: 'box-breathing',
+    title: 'Box',
+    emoji: '⬜',
+    color: COLORS.box,
+    gradient: ['#EDE9FE', '#F5F3FF'],
+    description: '4-4-4-4 breathing',
+    route: '/box-breathing',
+  },
+  {
+    id: '478-breathing',
+    title: '4-7-8',
+    emoji: '🌙',
+    color: COLORS.sleep,
+    gradient: ['#E0E7FF', '#EEF2FF'],
+    description: 'Deep relaxation',
+    route: '/478-breathing',
+  },
+  {
+    id: 'walking-meditation',
+    title: 'Walking',
+    emoji: '🚶',
+    color: COLORS.walking,
+    gradient: ['#CFFAFE', '#F0FDFA'],
+    description: 'Count your steps',
+    route: '/walking-meditation',
+  },
+  {
+    id: 'number-bubbles',
+    title: 'Bubbles',
+    emoji: '🔢',
+    color: COLORS.bubbles,
+    gradient: ['#FEF3C7', '#FFFBEB'],
+    description: 'Tap 1 to 10',
+    route: '/number-bubbles',
+  },
+  {
+    id: 'counting-ladder',
+    title: 'Ladder',
+    emoji: '🪜',
+    color: COLORS.ladder,
+    gradient: ['#DBEAFE', '#EFF6FF'],
+    description: 'Count with breath',
+    route: '/counting-ladder',
+  },
+  {
+    id: 'gong-listening',
+    title: 'Gong',
+    emoji: '🔔',
+    color: COLORS.gong,
+    gradient: ['#FFEDD5', '#FFF7ED'],
+    description: 'Listen deeply',
+    route: '/gong-listening',
+  },
+  {
+    id: 'body-scan',
+    title: 'Body Scan',
+    emoji: '🧘‍♀️',
+    color: COLORS.bodyScan,
+    gradient: ['#F3E8FF', '#FAF5FF'],
+    description: 'Body awareness',
+    route: '/body-scan',
+  },
+  {
+    id: 'loving-kindness',
+    title: 'Loving',
+    emoji: '💗',
+    color: COLORS.loving,
+    gradient: ['#FCE7F3', '#FDF2F8'],
+    description: 'Compassion',
+    route: '/loving-kindness',
+  },
+  {
+    id: 'mindful-eating',
+    title: 'Eating',
+    emoji: '🍎',
+    color: COLORS.eating,
+    gradient: ['#FEF3C7', '#FFFBEB'],
+    description: 'Slow down',
+    route: '/mindful-eating',
+  },
+];
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [calmScore, setCalmScore] = useState(5); // Default to middle
-  const [selectedMode, setSelectedMode] = useState<GameMode>('balloon-breathing');
   const startSession = useSessionStore((state) => state.startSession);
+  const loadSettings = useSettingsStore((state) => state.loadSettings);
   const lastSession = useHistoryStore((state) => state.getLastSession());
 
-  const handleStart = () => {
-    startSession(calmScore, selectedMode);
-    switch (selectedMode) {
-      case 'walking-meditation':
-        router.push('/walking-meditation');
-        break;
-      case 'number-bubbles':
-        router.push('/number-bubbles');
-        break;
-      case 'gong-listening':
-        router.push('/gong-listening');
-        break;
-      case 'counting-ladder':
-        router.push('/counting-ladder');
-        break;
-      default:
-        router.push('/game');
-    }
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const handlePracticeSelect = (practice: Practice) => {
+    // Default calm score of 5 when starting directly
+    startSession(5, practice.id);
+    router.push(practice.route);
   };
 
   return (
     <LinearGradient
-      colors={['#FFFFFF', '#F5F7FA', '#E8F4F8']}
+      colors={[COLORS.backgroundLight, COLORS.background, COLORS.backgroundMedium]}
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
@@ -47,137 +140,76 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoEmoji}>🧘</Text>
-          </View>
-          <Text style={styles.title}>
-            MindFool<Text style={styles.titleAccent}>.Games</Text>
-          </Text>
-          <Text style={styles.subtitle}>Your daily mental reset</Text>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <Text style={styles.logoEmoji}>🧘</Text>
+            </View>
+            <Text style={styles.title}>
+              Mind<Text style={styles.titleAccent}>Fool</Text>
+            </Text>
+            <Text style={styles.subtitle}>Daily mindfulness practices</Text>
 
-          {/* History Button */}
-          <TouchableOpacity
-            style={styles.historyButton}
-            onPress={() => router.push('/history')}
-          >
-            <Text style={styles.historyEmoji}>📊</Text>
-            <Text style={styles.historyButtonText}>View History</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Last Session Card (if exists) */}
-        {lastSession && (
-          <View style={styles.lastSessionContainer}>
-            <LastSessionCard session={lastSession} />
-          </View>
-        )}
-
-        {/* Main Content */}
-        <View style={styles.content}>
-          <CalmSlider
-            value={calmScore}
-            onChange={setCalmScore}
-            question="How scattered or calm is your mind?"
-          />
-
-          <View style={styles.spacer} />
-
-          {/* Game Mode Selection */}
-          <View style={styles.modeSelection}>
-            <Text style={styles.modeSelectionTitle}>Choose a practice:</Text>
-            <View style={styles.modeCards}>
+            {/* Header Actions */}
+            <View style={styles.headerActions}>
               <TouchableOpacity
-                style={[
-                  styles.modeCard,
-                  selectedMode === 'balloon-breathing' && styles.modeCardSelected
-                ]}
-                onPress={() => setSelectedMode('balloon-breathing')}
+                style={styles.headerButton}
+                onPress={() => router.push('/history')}
               >
-                <Text style={styles.modeEmoji}>🎈</Text>
-                <Text style={styles.modeTitle}>Balloon Breathing</Text>
-                <Text style={styles.modeDescription}>Follow the rhythm</Text>
+                <Text style={styles.headerButtonEmoji}>📊</Text>
               </TouchableOpacity>
-
               <TouchableOpacity
-                style={[
-                  styles.modeCard,
-                  selectedMode === 'walking-meditation' && styles.modeCardSelected
-                ]}
-                onPress={() => setSelectedMode('walking-meditation')}
+                style={styles.headerButton}
+                onPress={() => router.push('/settings')}
               >
-                <Text style={styles.modeEmoji}>🚶</Text>
-                <Text style={styles.modeTitle}>Walking Meditation</Text>
-                <Text style={styles.modeDescription}>Count your steps</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.modeCard,
-                  selectedMode === 'number-bubbles' && styles.modeCardSelected
-                ]}
-                onPress={() => setSelectedMode('number-bubbles')}
-              >
-                <Text style={styles.modeEmoji}>🔢</Text>
-                <Text style={styles.modeTitle}>Number Bubbles</Text>
-                <Text style={styles.modeDescription}>Tap 1 to 10</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.modeCard,
-                  selectedMode === 'gong-listening' && styles.modeCardSelected
-                ]}
-                onPress={() => setSelectedMode('gong-listening')}
-              >
-                <Text style={styles.modeEmoji}>🔔</Text>
-                <Text style={styles.modeTitle}>Gong Listening</Text>
-                <Text style={styles.modeDescription}>Listen deeply</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.modeCard,
-                  selectedMode === 'counting-ladder' && styles.modeCardSelected
-                ]}
-                onPress={() => setSelectedMode('counting-ladder')}
-              >
-                <Text style={styles.modeEmoji}>🪜</Text>
-                <Text style={styles.modeTitle}>Counting Ladder</Text>
-                <Text style={styles.modeDescription}>Count with breath</Text>
+                <Text style={styles.headerButtonEmoji}>⚙️</Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          <View style={styles.spacer} />
+          {/* Streak Card */}
+          <View style={styles.streakContainer}>
+            <StreakCard />
+          </View>
 
-          <Button
-            title={
-              selectedMode === 'walking-meditation' ? 'Start Walking' :
-              selectedMode === 'number-bubbles' ? 'Start Counting' :
-              selectedMode === 'gong-listening' ? 'Start Listening' :
-              selectedMode === 'counting-ladder' ? 'Start Breathing' :
-              'Start Session'
-            }
-            onPress={handleStart}
-            fullWidth
-          />
+          {/* Practices Grid */}
+          <View style={styles.practicesSection}>
+            <Text style={styles.sectionTitle}>Choose Your Practice</Text>
+            <View style={styles.practicesGrid}>
+              {PRACTICES.map((practice) => (
+                <TouchableOpacity
+                  key={practice.id}
+                  style={styles.practiceCard}
+                  onPress={() => handlePracticeSelect(practice)}
+                  activeOpacity={0.7}
+                >
+                  <LinearGradient
+                    colors={practice.gradient}
+                    style={styles.practiceGradient}
+                  >
+                    <Text style={styles.practiceEmoji}>{practice.emoji}</Text>
+                    <Text style={styles.practiceTitle}>{practice.title}</Text>
+                    <Text style={styles.practiceDescription}>{practice.description}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
-          {/* Info Card */}
-          <View style={styles.infoCard}>
-            <Text style={styles.infoEmoji}>✨</Text>
-            <Text style={styles.infoTitle}>5 mindfulness practices</Text>
-            <Text style={styles.infoText}>
-              Each session is 2-3 minutes. Find what works for you.
+          {/* Quick Start Tip */}
+          <View style={styles.tipCard}>
+            <Text style={styles.tipEmoji}>✨</Text>
+            <Text style={styles.tipText}>
+              Tap any practice to begin immediately. Each session is 2-5 minutes.
             </Text>
           </View>
-        </View>
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );
 }
+
+const CARD_WIDTH = (SCREEN_WIDTH - SPACING.xl * 2 - SPACING.lg) / 2;
 
 const styles = StyleSheet.create({
   gradient: {
@@ -188,58 +220,33 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: SPACING.lg,
+    paddingHorizontal: SPACING.xl,
+    paddingBottom: SPACING['3xl'],
   },
   header: {
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING['2xl'],
+    paddingTop: SPACING['2xl'],
+    paddingBottom: SPACING.xl,
     alignItems: 'center',
-  },
-  historyButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.white,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.lg,
-    borderRadius: 12,
-    marginTop: SPACING.md,
-    gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  historyEmoji: {
-    fontSize: 20,
-  },
-  historyButtonText: {
-    ...TYPOGRAPHY.bodyMedium,
-    color: COLORS.primary,
-    fontWeight: '600',
   },
   logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.white,
+    width: 72,
+    height: 72,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.surface,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.lg,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 6,
+    ...SHADOWS.colored,
   },
   logoEmoji: {
-    fontSize: 48,
+    fontSize: 40,
   },
   title: {
     ...TYPOGRAPHY.displayLarge,
+    fontSize: 36,
     color: COLORS.textPrimary,
-    marginBottom: SPACING.xs,
-    fontWeight: '700',
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
   titleAccent: {
     color: COLORS.primary,
@@ -247,115 +254,86 @@ const styles = StyleSheet.create({
   subtitle: {
     ...TYPOGRAPHY.bodyLarge,
     color: COLORS.textSecondary,
-    fontWeight: '400',
+    marginTop: SPACING.xs,
   },
-  content: {
-    alignItems: 'center',
-    paddingVertical: SPACING.xl,
-    paddingBottom: SPACING['2xl'],
-  },
-  spacer: {
-    height: SPACING['2xl'],
-  },
-  infoCard: {
+  headerActions: {
+    flexDirection: 'row',
+    gap: SPACING.md,
     marginTop: SPACING.lg,
-    backgroundColor: COLORS.white,
-    borderRadius: 16,
+  },
+  headerButton: {
+    width: 48,
+    height: 48,
+    borderRadius: BORDER_RADIUS.xl,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...SHADOWS.sm,
+  },
+  headerButtonEmoji: {
+    fontSize: 24,
+  },
+  streakContainer: {
+    marginTop: SPACING.xl,
+    marginBottom: SPACING.xl,
+  },
+  practicesSection: {
+    marginBottom: SPACING.xl,
+  },
+  sectionTitle: {
+    ...TYPOGRAPHY.heading1,
+    fontSize: 22,
+    color: COLORS.textPrimary,
+    fontWeight: '700',
+    marginBottom: SPACING.lg,
+  },
+  practicesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.lg,
+  },
+  practiceCard: {
+    width: CARD_WIDTH,
+    borderRadius: BORDER_RADIUS.xl,
+    overflow: 'hidden',
+    ...SHADOWS.md,
+  },
+  practiceGradient: {
     padding: SPACING.lg,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    minHeight: 140,
+    justifyContent: 'center',
   },
-  infoEmoji: {
-    fontSize: 40,
+  practiceEmoji: {
+    fontSize: 48,
     marginBottom: SPACING.sm,
   },
-  infoTitle: {
+  practiceTitle: {
     ...TYPOGRAPHY.heading2,
+    fontSize: 16,
     color: COLORS.textPrimary,
-    fontWeight: '600',
-    marginBottom: SPACING.xs,
+    fontWeight: '700',
+    marginBottom: 4,
   },
-  infoText: {
-    ...TYPOGRAPHY.bodyMedium,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-  },
-  footer: {
-    paddingVertical: SPACING.xl,
-    alignItems: 'center',
-  },
-  footerLabel: {
-    ...TYPOGRAPHY.label,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.xs,
-  },
-  footerText: {
+  practiceDescription: {
     ...TYPOGRAPHY.bodySmall,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  lastSessionContainer: {
-    marginTop: SPACING.md,
-  },
-  modeSelection: {
-    width: '100%',
-    marginTop: SPACING.lg,
-  },
-  modeSelectionTitle: {
-    ...TYPOGRAPHY.heading2,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
-    fontWeight: '600',
-  },
-  modeCards: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.md,
-    justifyContent: 'center',
-  },
-  modeCard: {
-    width: '47%',
-    minWidth: 140,
-    backgroundColor: COLORS.white,
-    borderRadius: 20,
+  tipCard: {
+    backgroundColor: COLORS.primarySoft,
+    borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.lg,
+    flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#E8F4F8',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 5,
+    gap: SPACING.md,
   },
-  modeCardSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: '#F0F9FF',
-    shadowColor: COLORS.primary,
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
-    elevation: 8,
-    transform: [{ scale: 1.02 }],
+  tipEmoji: {
+    fontSize: 24,
   },
-  modeEmoji: {
-    fontSize: 48,
-    marginBottom: SPACING.sm,
-  },
-  modeTitle: {
-    ...TYPOGRAPHY.heading2,
-    color: COLORS.textPrimary,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 6,
-  },
-  modeDescription: {
+  tipText: {
     ...TYPOGRAPHY.bodyMedium,
     color: COLORS.textSecondary,
-    textAlign: 'center',
-    fontWeight: '500',
+    flex: 1,
   },
 });

@@ -1,15 +1,13 @@
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { WalkingMeditation } from '../src/components/WalkingMeditation';
-import { COLORS, SPACING, TYPOGRAPHY } from '../src/constants/tokens';
+import { useSessionComplete } from '../src/hooks/useSessionComplete';
+import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
 
 export default function WalkingMeditationScreen() {
   const router = useRouter();
-
-  const handleComplete = () => {
-    router.push('/post-game');
-  };
+  const handleComplete = useSessionComplete();
 
   return (
     <LinearGradient
@@ -17,6 +15,9 @@ export default function WalkingMeditationScreen() {
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
+        <TouchableOpacity style={styles.exitButton} onPress={() => router.back()}>
+          <Text style={styles.exitButtonText}>✕</Text>
+        </TouchableOpacity>
         <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.title}>Walking Meditation</Text>
@@ -39,6 +40,24 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  exitButton: {
+    position: 'absolute',
+    top: SPACING.xl,
+    left: SPACING.lg,
+    width: 44,
+    height: 44,
+    borderRadius: BORDER_RADIUS.full,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+    ...SHADOWS.md,
+  },
+  exitButtonText: {
+    fontSize: 24,
+    color: COLORS.textSecondary,
+    fontWeight: '400',
   },
   content: {
     flex: 1,
