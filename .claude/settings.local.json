@@ -5,7 +5,11 @@
       "Bash(npm run dev:*)",
       "Bash(npm run:*)",
       "Bash(lsof:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(cat:*)",
+      "Bash(expo start:*)",
+      "Bash(npx expo start:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nUpdate Claude settings with auto-approved Expo commands\n\nAdded auto-approval for:\n- cat commands for file reading\n- expo start commands\n- npx expo start commands\n\nThis allows Claude to run Expo dev server commands without permission prompts.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
