@@ -109,12 +109,8 @@ export function GongListening({
       }
 
       // Create and play new sound
-      // TODO: Replace with actual gong sound file when available
-      // For now, this will use system sounds or you can add gong.mp3 to assets/sounds/
       const { sound } = await Audio.Sound.createAsync(
-        // Placeholder - will need to add actual gong sound file
-        // require('../../assets/sounds/gong.mp3')
-        { uri: 'https://freesound.org/data/previews/411/411089_5121236-lq.mp3' }, // Temporary online gong sound
+        require('../../assets/sounds/gong.mp3'),
         { shouldPlay: true, volume: 0.8 }
       );
 
