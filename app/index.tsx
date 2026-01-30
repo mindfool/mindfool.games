@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dim
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StreakCard } from '../src/components/StreakCard';
+import { CalmSlider } from '../src/components/CalmSlider';
 import { useSessionStore } from '../src/stores/sessionStore';
 import { useHistoryStore } from '../src/stores/historyStore';
 import { useSettingsStore } from '../src/stores/settingsStore';
@@ -119,14 +120,14 @@ export default function HomeScreen() {
   const startSession = useSessionStore((state) => state.startSession);
   const loadSettings = useSettingsStore((state) => state.loadSettings);
   const lastSession = useHistoryStore((state) => state.getLastSession());
+  const [calmScore, setCalmScore] = useState(5);
 
   useEffect(() => {
     loadSettings();
   }, []);
 
   const handlePracticeSelect = (practice: Practice) => {
-    // Default calm score of 5 when starting directly
-    startSession(5, practice.id);
+    startSession(calmScore, practice.id);
     router.push(practice.route);
   };
 
