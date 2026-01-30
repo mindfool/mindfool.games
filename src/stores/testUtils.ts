@@ -5,9 +5,12 @@ import { useSettingsStore } from './settingsStore';
 /**
  * Reset all Zustand stores to initial state.
  * Call in beforeEach() to prevent test pollution.
+ *
+ * Note: Using partial setState (not replace) to preserve store methods
+ * when using persisted stores with Zustand middleware.
  */
 export function resetAllStores(): void {
-  // Reset sessionStore
+  // Reset sessionStore - partial update preserves methods
   useSessionStore.setState({
     sessionId: null,
     preScore: null,
@@ -15,19 +18,19 @@ export function resetAllStores(): void {
     startTime: null,
     endTime: null,
     mode: 'balloon-breathing',
-  }, true);
+  });
 
-  // Reset historyStore
+  // Reset historyStore - partial update preserves methods
   useHistoryStore.setState({
     sessions: [],
-  }, true);
+  });
 
-  // Reset settingsStore
+  // Reset settingsStore - partial update preserves methods
   useSettingsStore.setState({
     skipPostGameFeedback: false,
     hapticFeedback: true,
     soundEffects: true,
-  }, true);
+  });
 }
 
 /**
