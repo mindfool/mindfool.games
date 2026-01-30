@@ -61,7 +61,7 @@ export function calculateStreaks(sessions: Session[]): StreakInfo {
   } else if (uniqueDays.includes(yesterday)) {
     // Streak started yesterday
     currentStreak = 1;
-    let checkDate = getDayBefore(getYesterday());
+    let checkDate = getPreviousDay(getYesterday());
 
     for (let i = 1; i < uniqueDays.length; i++) {
       const dayStr = uniqueDays[i];
@@ -121,15 +121,6 @@ function getYesterday(): Date {
   const date = new Date();
   date.setDate(date.getDate() - 1);
   return date;
-}
-
-/**
- * Get the day before a given date
- */
-function getDayBefore(date: Date): Date {
-  const newDate = new Date(date);
-  newDate.setDate(newDate.getDate() - 1);
-  return newDate;
 }
 
 /**
