@@ -173,6 +173,15 @@ export default function HomeScreen() {
             <StreakCard />
           </View>
 
+          {/* Calm Score Assessment */}
+          <View style={styles.calmSection}>
+            <CalmSlider
+              value={calmScore}
+              onChange={setCalmScore}
+              question="How calm is your mind right now?"
+            />
+          </View>
+
           {/* Practices Grid */}
           <View style={styles.practicesSection}>
             <Text style={styles.sectionTitle}>Choose Your Practice</Text>
@@ -277,6 +286,13 @@ const styles = StyleSheet.create({
   streakContainer: {
     marginTop: SPACING.xl,
     marginBottom: SPACING.xl,
+  },
+  calmSection: {
+    marginBottom: SPACING.xl,
+    paddingVertical: SPACING.lg,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.xl,
+    ...SHADOWS.sm,
   },
   practicesSection: {
     marginBottom: SPACING.xl,
