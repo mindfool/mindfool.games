@@ -1,5 +1,6 @@
-// Silence React Native warnings in tests
-jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+// Mock Expo runtime globals
+global.__ExpoImportMetaRegistry = {};
+global.structuredClone = global.structuredClone || ((val) => JSON.parse(JSON.stringify(val)));
 
 // Import mocks
 require('./__mocks__/@shopify/react-native-skia');
