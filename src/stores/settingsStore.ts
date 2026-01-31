@@ -1,17 +1,20 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AmbientType } from '../constants/audio';
+import { audioService } from '../services/AudioService';
 
 export interface SettingsState {
   skipPostGameFeedback: boolean;
   hapticFeedback: boolean;
   soundEffects: boolean;
+  soundVolume: number; // 0.0 to 1.0
   ambientSound: AmbientType;
 
   // Actions
   setSkipPostGameFeedback: (skip: boolean) => Promise<void>;
   setHapticFeedback: (enabled: boolean) => Promise<void>;
   setSoundEffects: (enabled: boolean) => Promise<void>;
+  setSoundVolume: (volume: number) => Promise<void>;
   setAmbientSound: (type: AmbientType) => Promise<void>;
   loadSettings: () => Promise<void>;
 }
@@ -22,6 +25,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   skipPostGameFeedback: false,
   hapticFeedback: true,
   soundEffects: true,
+  soundVolume: 0.7,
   ambientSound: 'off' as AmbientType,
 
   setSkipPostGameFeedback: async (skip: boolean) => {
@@ -36,6 +40,14 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   setSoundEffects: async (enabled: boolean) => {
     set({ soundEffects: enabled });
+    audioService.setEnabled(enabled);
+    await saveSettings(get());
+  },
+
+  setSoundVolume: async (volume: number) => {
+    const clampedVolume = Math.max(0, Math.min(1, volume));
+    set({ soundVolume: clampedVolume });
+    audioService.setVolume(clampedVolume);
     await saveSettings(get());
   },
 
@@ -53,8 +65,13 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           skipPostGameFeedback: settings.skipPostGameFeedback ?? false,
           hapticFeedback: settings.hapticFeedback ?? true,
           soundEffects: settings.soundEffects ?? true,
+          soundVolume: settings.soundVolume ?? 0.7,
           ambientSound: settings.ambientSound ?? 'off',
         });
+
+        // Sync AudioService with loaded settings
+        audioService.setEnabled(settings.soundEffects ?? true);
+        audioService.setVolume(settings.soundVolume ?? 0.7);
       }
     } catch (error) {
       console.error('Failed to load settings:', error);
@@ -68,6 +85,7 @@ async function saveSettings(state: SettingsState) {
       skipPostGameFeedback: state.skipPostGameFeedback,
       hapticFeedback: state.hapticFeedback,
       soundEffects: state.soundEffects,
+      soundVolume: state.soundVolume,
       ambientSound: state.ambientSound,
     };
     await AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
