@@ -156,12 +156,14 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={styles.headerButton}
                 onPress={() => router.push('/history')}
+                testID="history-button"
               >
                 <Text style={styles.headerButtonEmoji}>📊</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.headerButton}
                 onPress={() => router.push('/settings')}
+                testID="settings-button"
               >
                 <Text style={styles.headerButtonEmoji}>⚙️</Text>
               </TouchableOpacity>
@@ -169,7 +171,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Streak Card */}
-          <View style={styles.streakContainer}>
+          <View style={styles.streakContainer} testID="streak-card-container">
             <StreakCard />
           </View>
 
@@ -192,6 +194,7 @@ export default function HomeScreen() {
                   style={styles.practiceCard}
                   onPress={() => handlePracticeSelect(practice)}
                   activeOpacity={0.7}
+                  testID={`practice-card-${practice.id}`}
                 >
                   <LinearGradient
                     colors={practice.gradient}

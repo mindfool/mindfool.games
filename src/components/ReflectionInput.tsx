@@ -51,6 +51,7 @@ export function ReflectionInput({ onSubmit, onSkip }: ReflectionInputProps) {
               onPress={onSkip}
               variant="secondary"
               fullWidth
+              testID="skip-button"
             />
           </View>
           <View style={styles.buttonSpacer} />
@@ -59,6 +60,7 @@ export function ReflectionInput({ onSubmit, onSkip }: ReflectionInputProps) {
               title="Save"
               onPress={handleSubmit}
               fullWidth
+              testID="save-button"
             />
           </View>
         </View>

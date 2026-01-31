@@ -50,13 +50,13 @@ export default function PostGameScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} testID="post-game-screen">
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Session Complete!</Text>
+          <Text style={styles.title} testID="session-complete-title">Session Complete!</Text>
         </View>
 
         <View style={styles.content}>
@@ -95,7 +95,7 @@ export default function PostGameScreen() {
 
               <View style={styles.spacer} />
 
-              <Button title="Next" onPress={handleNext} fullWidth />
+              <Button title="Next" onPress={handleNext} fullWidth testID="next-button" />
 
               <Text style={styles.infoText}>
                 Great job taking time for mindfulness! 🌿

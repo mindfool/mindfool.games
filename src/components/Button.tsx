@@ -8,6 +8,7 @@ interface ButtonProps {
   variant?: 'primary' | 'secondary';
   disabled?: boolean;
   fullWidth?: boolean;
+  testID?: string;
 }
 
 export function Button({
@@ -16,6 +17,7 @@ export function Button({
   variant = 'primary',
   disabled = false,
   fullWidth = false,
+  testID,
 }: ButtonProps) {
   const containerStyle = [
     styles.container,
@@ -34,6 +36,7 @@ export function Button({
         style={containerStyle}
         onPress={onPress}
         activeOpacity={0.8}
+        testID={testID}
       >
         <LinearGradient
           colors={['#7BA5D6', '#6B9BD1', '#5A8BC7']}
@@ -59,6 +62,7 @@ export function Button({
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.7}
+      testID={testID}
     >
       <Text style={textStyle}>{title}</Text>
     </TouchableOpacity>

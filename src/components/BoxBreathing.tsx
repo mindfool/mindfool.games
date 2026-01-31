@@ -157,6 +157,7 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
         <TouchableOpacity
           style={styles.completeButton}
           onPress={handleCompleteEarly}
+          testID="complete-session-btn"
         >
           <Text style={styles.completeButtonText}>Complete Session</Text>
         </TouchableOpacity>

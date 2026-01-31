@@ -17,6 +17,7 @@ export function StreakCard() {
     <LinearGradient
       colors={['#FEF3C7', '#FFFBEB']}
       style={styles.container}
+      testID="streak-card"
     >
       <View style={styles.content}>
         <View style={styles.streakSection}>
@@ -24,7 +25,7 @@ export function StreakCard() {
             <Text style={styles.fireEmoji}>🔥</Text>
           </View>
           <View style={styles.streakInfo}>
-            <Text style={styles.streakNumber}>{streakInfo.currentStreak}</Text>
+            <Text style={styles.streakNumber} testID="streak-count">{streakInfo.currentStreak}</Text>
             <Text style={styles.streakLabel}>Day Streak</Text>
           </View>
         </View>
