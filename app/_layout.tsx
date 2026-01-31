@@ -1,16 +1,28 @@
-import { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
 
 export default function RootLayout() {
+  const router = useRouter();
+  const segments = useSegments();
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
   const loadSettings = useSettingsStore((state) => state.loadSettings);
+  const onboardingComplete = useSettingsStore((state) => state.onboardingComplete);
 
+  // Load settings on mount
   useEffect(() => {
-    loadSettings();
+    loadSettings().then(() => setSettingsLoaded(true));
   }, []);
+
+  // Redirect to onboarding if not complete (after settings loaded)
+  useEffect(() => {
+    if (settingsLoaded && !onboardingComplete && segments[0] !== 'onboarding') {
+      router.replace('/onboarding');
+    }
+  }, [settingsLoaded, onboardingComplete, segments]);
 
   return (
     <ErrorBoundary>
@@ -35,6 +47,12 @@ export default function RootLayout() {
             options={{
               animation: 'slide_from_bottom',
               animationDuration: 300,
+            }}
+          />
+          <Stack.Screen
+            name="onboarding"
+            options={{
+              animation: 'fade',
             }}
           />
         </Stack>
