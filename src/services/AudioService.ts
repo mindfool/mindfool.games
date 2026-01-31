@@ -1,6 +1,6 @@
 import { Audio } from 'expo-av';
 import { Platform } from 'react-native';
-import { SOUND_ASSETS, SILENCE_ASSET, DEFAULT_VOLUME, SoundType } from '../constants/audio';
+import { SOUND_ASSETS, SILENCE_ASSET, DEFAULT_VOLUME, SoundType, AMBIENT_ASSETS, AmbientType } from '../constants/audio';
 
 class AudioService {
   private sounds: Map<SoundType, Audio.Sound> = new Map();
@@ -8,6 +8,8 @@ class AudioService {
   private enabled: boolean = true;
   private initialized: boolean = false;
   private webUnlocked: boolean = false;
+  private ambientSound: Audio.Sound | null = null;
+  private currentAmbient: AmbientType = 'off';
 
   /**
    * Initialize audio mode. Call once on app start.
@@ -82,6 +84,62 @@ class AudioService {
   }
 
   /**
+   * Start playing an ambient sound loop.
+   * Stops any currently playing ambient first.
+   */
+  async playAmbient(type: AmbientType): Promise<void> {
+    if (!this.enabled || type === 'off') {
+      await this.stopAmbient();
+      return;
+    }
+
+    // Stop current ambient if different
+    if (this.currentAmbient !== type) {
+      await this.stopAmbient();
+    }
+
+    // Already playing this ambient
+    if (this.ambientSound && this.currentAmbient === type) {
+      return;
+    }
+
+    try {
+      const { sound } = await Audio.Sound.createAsync(AMBIENT_ASSETS[type], {
+        isLooping: true,
+        volume: this.volume,
+        shouldPlay: true,
+      });
+      this.ambientSound = sound;
+      this.currentAmbient = type;
+    } catch (error) {
+      console.warn(`AudioService: Failed to play ambient ${type}:`, error);
+    }
+  }
+
+  /**
+   * Stop the currently playing ambient sound.
+   */
+  async stopAmbient(): Promise<void> {
+    if (this.ambientSound) {
+      try {
+        await this.ambientSound.stopAsync();
+        await this.ambientSound.unloadAsync();
+      } catch (error) {
+        // Ignore cleanup errors
+      }
+      this.ambientSound = null;
+      this.currentAmbient = 'off';
+    }
+  }
+
+  /**
+   * Get the currently playing ambient type.
+   */
+  getCurrentAmbient(): AmbientType {
+    return this.currentAmbient;
+  }
+
+  /**
    * Set master volume (0.0 to 1.0).
    */
   setVolume(volume: number): void {
@@ -95,6 +153,11 @@ class AudioService {
         // Ignore - sound may be playing
       }
     });
+
+    // Update ambient sound volume
+    if (this.ambientSound) {
+      this.ambientSound.setVolumeAsync(this.volume).catch(() => {});
+    }
   }
 
   /**
@@ -109,6 +172,9 @@ class AudioService {
    */
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
+    if (!enabled) {
+      this.stopAmbient();
+    }
   }
 
   /**
@@ -122,6 +188,10 @@ class AudioService {
    * Clean up all sounds. Call on app unmount.
    */
   async cleanup(): Promise<void> {
+    // Stop ambient sound first
+    await this.stopAmbient();
+
+    // Clean up preloaded sounds
     for (const sound of this.sounds.values()) {
       try {
         await sound.unloadAsync();
@@ -138,4 +208,4 @@ class AudioService {
 export const audioService = new AudioService();
 
 // Re-export types for convenience
-export { SoundType } from '../constants/audio';
+export { SoundType, AmbientType } from '../constants/audio';
