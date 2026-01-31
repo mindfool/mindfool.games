@@ -10,6 +10,7 @@ import Animated, {
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
 import { BREATHING_EASING, ANIMATION_DURATIONS } from '../constants/animations';
 import { audioService } from '../services/AudioService';
+import { hapticService } from '../services/HapticService';
 import { useSettingsStore } from '../stores/settingsStore';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -43,11 +44,13 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
       return;
     }
     audioService.playSound('tick');
+    hapticService.selection(); // Subtle haptic on phase transition
   }, [currentPhase]);
 
   useEffect(() => {
     // Play start chime when exercise begins
     audioService.playSound('chime-start');
+    hapticService.medium(); // Medium haptic for practice start
 
     // Start ambient sound if configured
     if (ambientSound !== 'off') {
