@@ -17,7 +17,7 @@ interface Practice {
   title: string;
   emoji: string;
   color: string;
-  gradient: string[];
+  gradient: [string, string];
   description: string;
   route: string;
 }

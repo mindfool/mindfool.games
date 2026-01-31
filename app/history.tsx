@@ -40,13 +40,14 @@ export default function HistoryScreen() {
     }
   };
 
-  const getModeName = (mode: GameMode) => {
+  const getModeName = (mode: GameMode): string => {
     switch (mode) {
       case 'balloon-breathing': return 'Balloon Breathing';
       case 'walking-meditation': return 'Walking Meditation';
       case 'number-bubbles': return 'Number Bubbles';
       case 'gong-listening': return 'Gong Listening';
       case 'counting-ladder': return 'Counting Ladder';
+      default: return mode;
     }
   };
 
