@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import Slider from '@react-native-community/slider';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
+import { AMBIENT_LABELS, AmbientType } from '../src/constants/audio';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -11,9 +13,13 @@ export default function SettingsScreen() {
     skipPostGameFeedback,
     hapticFeedback,
     soundEffects,
+    soundVolume,
+    ambientSound,
     setSkipPostGameFeedback,
     setHapticFeedback,
     setSoundEffects,
+    setSoundVolume,
+    setAmbientSound,
     loadSettings,
   } = useSettingsStore();
 
@@ -100,6 +106,64 @@ export default function SettingsScreen() {
                   trackColor={{ false: '#D1D5DB', true: COLORS.primary }}
                   thumbColor={COLORS.white}
                 />
+              </View>
+            </View>
+
+            {/* Audio Settings */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Audio</Text>
+
+              {/* Volume Slider */}
+              <View style={styles.settingCard}>
+                <View style={styles.settingInfo}>
+                  <Text style={styles.settingTitle}>Volume</Text>
+                  <Text style={styles.settingDescription}>
+                    {Math.round(soundVolume * 100)}%
+                  </Text>
+                </View>
+                <Slider
+                  style={{ width: 120, height: 40 }}
+                  minimumValue={0}
+                  maximumValue={1}
+                  value={soundVolume}
+                  onSlidingComplete={setSoundVolume}
+                  minimumTrackTintColor={COLORS.primary}
+                  maximumTrackTintColor="#D1D5DB"
+                  thumbTintColor={COLORS.primary}
+                />
+              </View>
+
+              {/* Ambient Sound Picker */}
+              <View style={styles.settingCard}>
+                <View style={styles.settingInfo}>
+                  <Text style={styles.settingTitle}>Background Sound</Text>
+                  <Text style={styles.settingDescription}>
+                    Ambient sound during practice
+                  </Text>
+                </View>
+              </View>
+
+              {/* Ambient Options */}
+              <View style={styles.ambientOptions}>
+                {(['off', 'rain', 'nature', 'whitenoise'] as AmbientType[]).map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.ambientOption,
+                      ambientSound === type && styles.ambientOptionActive,
+                    ]}
+                    onPress={() => setAmbientSound(type)}
+                  >
+                    <Text
+                      style={[
+                        styles.ambientOptionText,
+                        ambientSound === type && styles.ambientOptionTextActive,
+                      ]}
+                    >
+                      {AMBIENT_LABELS[type]}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
 
@@ -245,5 +309,29 @@ const styles = StyleSheet.create({
     ...TYPOGRAPHY.bodyLarge,
     color: COLORS.textSecondary,
     textAlign: 'center',
+  },
+  ambientOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+    marginTop: -SPACING.sm,
+  },
+  ambientOption: {
+    backgroundColor: COLORS.surface,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: BORDER_RADIUS.lg,
+    ...SHADOWS.sm,
+  },
+  ambientOptionActive: {
+    backgroundColor: COLORS.primary,
+  },
+  ambientOptionText: {
+    ...TYPOGRAPHY.bodyMedium,
+    color: COLORS.textPrimary,
+    fontWeight: '500',
+  },
+  ambientOptionTextActive: {
+    color: COLORS.white,
   },
 });
