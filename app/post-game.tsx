@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { CalmSlider } from '../src/components/CalmSlider';
 import { Button } from '../src/components/Button';
 import { ReflectionInput } from '../src/components/ReflectionInput';
+import { CountUpNumber } from '../src/components/animations/CountUpNumber';
 import { useSessionStore } from '../src/stores/sessionStore';
 import { COLORS, SPACING, TYPOGRAPHY, SCATTER_LABELS } from '../src/constants/tokens';
 
@@ -35,9 +37,9 @@ export default function PostGameScreen() {
   const improvement = delta; // Positive delta = improvement (higher score = calmer)
 
   const getDeltaMessage = () => {
-    if (improvement >= 4) return `Wow! You feel ${improvement} points calmer! ✨`;
-    if (improvement >= 2) return `You feel ${improvement} points calmer! 🌿`;
-    if (improvement === 1) return 'You feel a bit calmer 🍃';
+    if (improvement >= 4) return `Wow! You feel ${improvement} points calmer!`;
+    if (improvement >= 2) return `You feel ${improvement} points calmer!`;
+    if (improvement === 1) return 'You feel a bit calmer';
     if (improvement === 0) return 'Your calm stayed the same';
     if (improvement === -1) return 'You feel a bit more scattered';
     return `You feel ${Math.abs(improvement)} points more scattered`;
@@ -55,34 +57,55 @@ export default function PostGameScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
+        <Animated.View style={styles.header} entering={FadeInUp.duration(400)}>
           <Text style={styles.title} testID="session-complete-title">Session Complete!</Text>
-        </View>
+        </Animated.View>
 
         <View style={styles.content}>
           {!showReflection ? (
             <>
               {/* Before/After Comparison */}
-              <View style={styles.comparisonCard}>
+              <Animated.View
+                style={styles.comparisonCard}
+                entering={FadeInUp.duration(400).delay(100)}
+              >
                 <View style={styles.comparisonRow}>
                   <Text style={styles.comparisonLabel}>Before:</Text>
-                  <Text style={styles.comparisonValue}>
-                    {preScore} • {preScore !== null && SCATTER_LABELS[preScore]}
-                  </Text>
+                  <View style={styles.comparisonValueRow}>
+                    <CountUpNumber
+                      end={preScore ?? 0}
+                      duration={1}
+                      style={styles.comparisonValue}
+                    />
+                    <Text style={styles.comparisonValue}>
+                      {' '}{preScore !== null && SCATTER_LABELS[preScore]}
+                    </Text>
+                  </View>
                 </View>
                 <View style={styles.comparisonRow}>
                   <Text style={styles.comparisonLabel}>After:</Text>
-                  <Text style={styles.comparisonValue}>
-                    {postScore} • {SCATTER_LABELS[postScore]}
-                  </Text>
+                  <View style={styles.comparisonValueRow}>
+                    <CountUpNumber
+                      end={postScore}
+                      duration={1.5}
+                      delay={0.5}
+                      style={styles.comparisonValue}
+                    />
+                    <Text style={styles.comparisonValue}>
+                      {' '}{SCATTER_LABELS[postScore]}
+                    </Text>
+                  </View>
                 </View>
 
-                <View style={[styles.deltaCard, { backgroundColor: getDeltaColor() + '20' }]}>
+                <Animated.View
+                  style={[styles.deltaCard, { backgroundColor: getDeltaColor() + '20' }]}
+                  entering={FadeIn.delay(2000)}
+                >
                   <Text style={[styles.deltaText, { color: getDeltaColor() }]}>
                     {getDeltaMessage()}
                   </Text>
-                </View>
-              </View>
+                </Animated.View>
+              </Animated.View>
 
               <View style={styles.spacer} />
 
@@ -98,7 +121,7 @@ export default function PostGameScreen() {
               <Button title="Next" onPress={handleNext} fullWidth testID="next-button" />
 
               <Text style={styles.infoText}>
-                Great job taking time for mindfulness! 🌿
+                Great job taking time for mindfulness!
               </Text>
             </>
           ) : (
@@ -149,6 +172,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: SPACING.sm,
+  },
+  comparisonValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   comparisonLabel: {
     ...TYPOGRAPHY.bodyLarge,
