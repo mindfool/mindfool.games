@@ -23,11 +23,20 @@ export default function RootLayout() {
               backgroundColor: '#F5F7FA',
             },
             animation: 'fade',
+            animationDuration: 250,
+            gestureEnabled: true,
+            gestureDirection: 'horizontal',
           }}
         >
           <Stack.Screen name="index" />
           <Stack.Screen name="game" />
-          <Stack.Screen name="post-game" />
+          <Stack.Screen
+            name="post-game"
+            options={{
+              animation: 'slide_from_bottom',
+              animationDuration: 300,
+            }}
+          />
         </Stack>
       </GestureHandlerRootView>
     </ErrorBoundary>
