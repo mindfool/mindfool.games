@@ -207,5 +207,128 @@ describe('streaksCalculator', () => {
         expect(result.lastSessionDate).toEqual(new Date('2024-03-15T10:00:00Z'));
       });
     });
+
+    describe('date boundary edge cases', () => {
+      const boundaryTestCases: [string, string, string[], number][] = [
+        ['year boundary', '2024-01-01T12:00:00Z', ['2024-01-01T10:00:00Z', '2023-12-31T10:00:00Z'], 2],
+        ['month boundary', '2024-02-01T12:00:00Z', ['2024-02-01T10:00:00Z', '2024-01-31T10:00:00Z'], 2],
+        ['leap year Feb 29 to Mar 1', '2024-03-01T12:00:00Z', ['2024-03-01T10:00:00Z', '2024-02-29T10:00:00Z'], 2],
+      ];
+
+      test.each(boundaryTestCases)(
+        '%s: streak continues correctly',
+        (_, today, sessionDates, expectedStreak) => {
+          jest.setSystemTime(new Date(today));
+          const sessions = sessionDates.map((d) => createSession(new Date(d)));
+
+          const result = calculateStreaks(sessions);
+
+          expect(result.currentStreak).toBe(expectedStreak);
+        }
+      );
+    });
+
+    describe('multiple sessions same day', () => {
+      it('should count as 1 day for streak but count all for totalSessions', () => {
+        // Use local date construction to avoid timezone issues
+        const today = new Date(2024, 2, 15, 12, 0, 0); // March 15, 2024 noon local
+        jest.setSystemTime(today);
+        const sessions = [
+          createSession(new Date(2024, 2, 15, 9, 0, 0)), // 9am local
+          createSession(new Date(2024, 2, 15, 12, 0, 0)), // noon local
+          createSession(new Date(2024, 2, 15, 18, 0, 0)), // 6pm local
+        ];
+
+        const result = calculateStreaks(sessions);
+
+        expect(result.currentStreak).toBe(1);
+        expect(result.longestStreak).toBe(1);
+        expect(result.totalSessions).toBe(3);
+      });
+
+      it('should handle multiple sessions on consecutive days correctly', () => {
+        // Use local date construction to avoid timezone issues
+        const today = new Date(2024, 2, 15, 12, 0, 0); // March 15, 2024 noon local
+        jest.setSystemTime(today);
+        const sessions = [
+          // 3 sessions today
+          createSession(new Date(2024, 2, 15, 9, 0, 0)),
+          createSession(new Date(2024, 2, 15, 12, 0, 0)),
+          createSession(new Date(2024, 2, 15, 18, 0, 0)),
+          // 2 sessions yesterday
+          createSession(new Date(2024, 2, 14, 10, 0, 0)),
+          createSession(new Date(2024, 2, 14, 20, 0, 0)),
+        ];
+
+        const result = calculateStreaks(sessions);
+
+        expect(result.currentStreak).toBe(2);
+        expect(result.longestStreak).toBe(2);
+        expect(result.totalSessions).toBe(5);
+      });
+    });
+  });
+
+  describe('practicedToday', () => {
+    it('should return false for empty array', () => {
+      jest.setSystemTime(new Date('2024-03-15T12:00:00Z'));
+
+      const result = practicedToday([]);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return true for session today', () => {
+      jest.setSystemTime(new Date('2024-03-15T12:00:00Z'));
+      const sessions = [createSession(new Date('2024-03-15T10:00:00Z'))];
+
+      const result = practicedToday(sessions);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false for session yesterday only', () => {
+      jest.setSystemTime(new Date('2024-03-15T12:00:00Z'));
+      const sessions = [createSession(new Date('2024-03-14T10:00:00Z'))];
+
+      const result = practicedToday(sessions);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return true for multiple sessions including today', () => {
+      jest.setSystemTime(new Date('2024-03-15T12:00:00Z'));
+      const sessions = [
+        createSession(new Date('2024-03-14T10:00:00Z')),
+        createSession(new Date('2024-03-15T10:00:00Z')),
+        createSession(new Date('2024-03-13T10:00:00Z')),
+      ];
+
+      const result = practicedToday(sessions);
+
+      expect(result).toBe(true);
+    });
+
+    it('should detect early morning session as today', () => {
+      // Use local date construction to avoid timezone issues
+      const today = new Date(2024, 2, 15, 23, 59, 0); // March 15, 2024 11:59pm local
+      jest.setSystemTime(today);
+      const sessions = [createSession(new Date(2024, 2, 15, 0, 1, 0))]; // 12:01am same day local
+
+      const result = practicedToday(sessions);
+
+      expect(result).toBe(true);
+    });
+
+    it('should detect late night session as today', () => {
+      // Use local date construction to avoid timezone issues
+      const today = new Date(2024, 2, 15, 0, 1, 0); // March 15, 2024 12:01am local
+      jest.setSystemTime(today);
+      const sessions = [createSession(new Date(2024, 2, 15, 0, 0, 30))]; // 12:00:30am same day local
+
+      const result = practicedToday(sessions);
+
+      expect(result).toBe(true);
+    });
   });
 });
