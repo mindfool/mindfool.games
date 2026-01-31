@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
+import { audioService } from '../services/AudioService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -19,6 +20,9 @@ export function BreathingVideo({ duration = 180, onComplete, minDuration = 10 }:
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // Play start chime when exercise begins
+    audioService.playSound('chime-start');
+
     // Start playing the video
     videoRef.current?.playAsync();
 

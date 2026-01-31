@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
@@ -7,6 +7,7 @@ import { Button } from '../src/components/Button';
 import { ReflectionInput } from '../src/components/ReflectionInput';
 import { CountUpNumber } from '../src/components/animations/CountUpNumber';
 import { useSessionStore } from '../src/stores/sessionStore';
+import { audioService } from '../src/services/AudioService';
 import { COLORS, SPACING, TYPOGRAPHY, SCATTER_LABELS } from '../src/constants/tokens';
 
 export default function PostGameScreen() {
@@ -17,6 +18,11 @@ export default function PostGameScreen() {
 
   const [postScore, setPostScore] = useState(5);
   const [showReflection, setShowReflection] = useState(false);
+
+  // Play completion chime when postgame screen appears
+  useEffect(() => {
+    audioService.playSound('chime-complete');
+  }, []);
 
   const handleNext = () => {
     setShowReflection(true);

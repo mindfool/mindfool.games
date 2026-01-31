@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
 import { BREATHING_EASING, ANIMATION_DURATIONS } from '../constants/animations';
+import { audioService } from '../services/AudioService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -33,6 +34,9 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
   const PHASE_DURATION = 4000; // 4 seconds
 
   useEffect(() => {
+    // Play start chime when exercise begins
+    audioService.playSound('chime-start');
+
     // Start the breathing cycle
     startBreathingCycle();
 
