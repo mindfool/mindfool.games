@@ -10,6 +10,7 @@ import Animated, {
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
 import { BREATHING_EASING, ANIMATION_DURATIONS } from '../constants/animations';
 import { audioService } from '../services/AudioService';
+import { useSettingsStore } from '../stores/settingsStore';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -27,6 +28,7 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
   const [phaseCount, setPhaseCount] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstPhase = useRef(true);
+  const ambientSound = useSettingsStore((state) => state.ambientSound);
 
   const scale = useSharedValue(0.6);
   const opacity = useSharedValue(0.3);
@@ -47,6 +49,11 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
     // Play start chime when exercise begins
     audioService.playSound('chime-start');
 
+    // Start ambient sound if configured
+    if (ambientSound !== 'off') {
+      audioService.playAmbient(ambientSound);
+    }
+
     // Start the breathing cycle
     startBreathingCycle();
 
@@ -64,8 +71,10 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      // Stop ambient sound when component unmounts
+      audioService.stopAmbient();
     };
-  }, [duration, onComplete]);
+  }, [duration, onComplete, ambientSound]);
 
   const startBreathingCycle = () => {
     // Reset and start the cycle
