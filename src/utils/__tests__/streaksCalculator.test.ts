@@ -63,6 +63,24 @@ describe('streaksCalculator', () => {
         expect(result.totalSessions).toBe(1);
       });
 
+      it('should return streak of 3 for consecutive days starting from yesterday (no session today)', () => {
+        // Use local date construction for timezone safety
+        const today = new Date(2024, 2, 15, 12, 0, 0); // March 15, 2024 noon local
+        jest.setSystemTime(today);
+        // Sessions yesterday, day before, and day before that - but NOT today
+        const sessions = [
+          createSession(new Date(2024, 2, 14, 10, 0, 0)), // Mar 14
+          createSession(new Date(2024, 2, 13, 10, 0, 0)), // Mar 13
+          createSession(new Date(2024, 2, 12, 10, 0, 0)), // Mar 12
+        ];
+
+        const result = calculateStreaks(sessions);
+
+        expect(result.currentStreak).toBe(3);
+        expect(result.longestStreak).toBe(3);
+        expect(result.totalSessions).toBe(3);
+      });
+
       it('should return streak of 0 for session 2+ days ago only (broken)', () => {
         jest.setSystemTime(new Date('2024-03-15T12:00:00Z'));
         const sessions = [createSession(new Date('2024-03-13T10:00:00Z'))];
