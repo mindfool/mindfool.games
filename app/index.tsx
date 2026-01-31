@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Dimensions } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { AnimatedPressable } from '../src/components/animations/AnimatedPressable';
 import { StreakCard } from '../src/components/StreakCard';
 import { CalmSlider } from '../src/components/CalmSlider';
 import { useSessionStore } from '../src/stores/sessionStore';
@@ -153,20 +155,24 @@ export default function HomeScreen() {
 
             {/* Header Actions */}
             <View style={styles.headerActions}>
-              <TouchableOpacity
-                style={styles.headerButton}
-                onPress={() => router.push('/history')}
-                testID="history-button"
-              >
-                <Text style={styles.headerButtonEmoji}>📊</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.headerButton}
-                onPress={() => router.push('/settings')}
-                testID="settings-button"
-              >
-                <Text style={styles.headerButtonEmoji}>⚙️</Text>
-              </TouchableOpacity>
+              <Animated.View entering={FadeInUp.delay(0).duration(400)}>
+                <AnimatedPressable
+                  style={styles.headerButton}
+                  onPress={() => router.push('/history')}
+                  testID="history-button"
+                >
+                  <Text style={styles.headerButtonEmoji}>📊</Text>
+                </AnimatedPressable>
+              </Animated.View>
+              <Animated.View entering={FadeInUp.delay(0).duration(400)}>
+                <AnimatedPressable
+                  style={styles.headerButton}
+                  onPress={() => router.push('/settings')}
+                  testID="settings-button"
+                >
+                  <Text style={styles.headerButtonEmoji}>⚙️</Text>
+                </AnimatedPressable>
+              </Animated.View>
             </View>
           </View>
 
@@ -188,23 +194,26 @@ export default function HomeScreen() {
           <View style={styles.practicesSection}>
             <Text style={styles.sectionTitle}>Choose Your Practice</Text>
             <View style={styles.practicesGrid}>
-              {PRACTICES.map((practice) => (
-                <TouchableOpacity
+              {PRACTICES.map((practice, index) => (
+                <AnimatedPressable
                   key={practice.id}
-                  style={styles.practiceCard}
                   onPress={() => handlePracticeSelect(practice)}
-                  activeOpacity={0.7}
+                  style={styles.practiceCard}
                   testID={`practice-card-${practice.id}`}
                 >
-                  <LinearGradient
-                    colors={practice.gradient}
-                    style={styles.practiceGradient}
+                  <Animated.View
+                    entering={FadeInUp.delay(index * 80).duration(400)}
                   >
-                    <Text style={styles.practiceEmoji}>{practice.emoji}</Text>
-                    <Text style={styles.practiceTitle}>{practice.title}</Text>
-                    <Text style={styles.practiceDescription}>{practice.description}</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+                    <LinearGradient
+                      colors={practice.gradient}
+                      style={styles.practiceGradient}
+                    >
+                      <Text style={styles.practiceEmoji}>{practice.emoji}</Text>
+                      <Text style={styles.practiceTitle}>{practice.title}</Text>
+                      <Text style={styles.practiceDescription}>{practice.description}</Text>
+                    </LinearGradient>
+                  </Animated.View>
+                </AnimatedPressable>
               ))}
             </View>
           </View>
