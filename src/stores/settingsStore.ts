@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AmbientType } from '../constants/audio';
 import { audioService } from '../services/AudioService';
+import { hapticService } from '../services/HapticService';
 
 export interface SettingsState {
   skipPostGameFeedback: boolean;
@@ -35,6 +36,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   setHapticFeedback: async (enabled: boolean) => {
     set({ hapticFeedback: enabled });
+    hapticService.setEnabled(enabled);
     await saveSettings(get());
   },
 
@@ -72,6 +74,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         // Sync AudioService with loaded settings
         audioService.setEnabled(settings.soundEffects ?? true);
         audioService.setVolume(settings.soundVolume ?? 0.7);
+
+        // Sync HapticService with loaded settings
+        hapticService.setEnabled(settings.hapticFeedback ?? true);
       }
     } catch (error) {
       console.error('Failed to load settings:', error);
