@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { AnimatedPressable } from '../src/components/animations/AnimatedPressable';
 import { StreakCard } from '../src/components/StreakCard';
 import { CalmSlider } from '../src/components/CalmSlider';
+import { QuickStartCard } from '../src/components/QuickStartCard';
 import { useSessionStore } from '../src/stores/sessionStore';
 import { useHistoryStore } from '../src/stores/historyStore';
 import { useSettingsStore } from '../src/stores/settingsStore';
@@ -123,6 +124,7 @@ export default function HomeScreen() {
   const startSession = useSessionStore((state) => state.startSession);
   const loadSettings = useSettingsStore((state) => state.loadSettings);
   const soundEffects = useSettingsStore((state) => state.soundEffects);
+  const setLastPracticeMode = useSettingsStore((state) => state.setLastPracticeMode);
   const lastSession = useHistoryStore((state) => state.getLastSession());
   const [calmScore, setCalmScore] = useState(5);
   const audioInitialized = useRef(false);
@@ -155,8 +157,20 @@ export default function HomeScreen() {
   const handlePracticeSelect = (practice: Practice) => {
     // Unlock web audio on first user interaction
     audioService.unlockWebAudio();
+    setLastPracticeMode(practice.id); // Track last practiced mode
     startSession(calmScore, practice.id);
     router.push(practice.route);
+  };
+
+  const handleQuickStart = (mode: GameMode) => {
+    audioService.unlockWebAudio();
+    // Find practice by mode to get route
+    const practice = PRACTICES.find(p => p.id === mode);
+    if (practice) {
+      setLastPracticeMode(mode);
+      startSession(calmScore, mode);
+      router.push(practice.route);
+    }
   };
 
   return (
@@ -205,6 +219,11 @@ export default function HomeScreen() {
           {/* Streak Card */}
           <View style={styles.streakContainer} testID="streak-card-container">
             <StreakCard />
+          </View>
+
+          {/* Quick Start - shows if user has practiced before */}
+          <View style={styles.quickStartContainer}>
+            <QuickStartCard onPress={handleQuickStart} />
           </View>
 
           {/* Calm Score Assessment */}
@@ -324,6 +343,9 @@ const styles = StyleSheet.create({
   streakContainer: {
     marginTop: SPACING.xl,
     marginBottom: SPACING.xl,
+  },
+  quickStartContainer: {
+    marginBottom: SPACING.lg,
   },
   calmSection: {
     marginBottom: SPACING.xl,
