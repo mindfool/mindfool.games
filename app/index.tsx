@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Dimensions } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,6 +9,7 @@ import { CalmSlider } from '../src/components/CalmSlider';
 import { useSessionStore } from '../src/stores/sessionStore';
 import { useHistoryStore } from '../src/stores/historyStore';
 import { useSettingsStore } from '../src/stores/settingsStore';
+import { audioService } from '../src/services/AudioService';
 import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
 import { GameMode } from '../src/types';
 
@@ -121,14 +122,39 @@ export default function HomeScreen() {
   const router = useRouter();
   const startSession = useSessionStore((state) => state.startSession);
   const loadSettings = useSettingsStore((state) => state.loadSettings);
+  const soundEffects = useSettingsStore((state) => state.soundEffects);
   const lastSession = useHistoryStore((state) => state.getLastSession());
   const [calmScore, setCalmScore] = useState(5);
+  const audioInitialized = useRef(false);
+
+  // Initialize audio system on app start
+  useEffect(() => {
+    const initAudio = async () => {
+      if (audioInitialized.current) return;
+      audioInitialized.current = true;
+      await audioService.initialize();
+      await audioService.preloadSounds();
+    };
+    initAudio();
+
+    // Cleanup on unmount (app close)
+    return () => {
+      audioService.cleanup();
+    };
+  }, []);
+
+  // Sync audio enabled state with settings
+  useEffect(() => {
+    audioService.setEnabled(soundEffects);
+  }, [soundEffects]);
 
   useEffect(() => {
     loadSettings();
   }, []);
 
   const handlePracticeSelect = (practice: Practice) => {
+    // Unlock web audio on first user interaction
+    audioService.unlockWebAudio();
     startSession(calmScore, practice.id);
     router.push(practice.route);
   };
