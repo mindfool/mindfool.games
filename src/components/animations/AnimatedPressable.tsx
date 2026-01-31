@@ -6,6 +6,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
+import { hapticService } from '../../services/HapticService';
 
 interface AnimatedPressableProps {
   children: ReactNode;
@@ -14,6 +15,7 @@ interface AnimatedPressableProps {
   scaleValue?: number;
   disabled?: boolean;
   testID?: string;
+  hapticEnabled?: boolean;
 }
 
 export function AnimatedPressable({
@@ -23,6 +25,7 @@ export function AnimatedPressable({
   scaleValue = 0.96,
   disabled = false,
   testID,
+  hapticEnabled = true,
 }: AnimatedPressableProps) {
   const scale = useSharedValue(1);
 
@@ -33,6 +36,9 @@ export function AnimatedPressable({
   });
 
   const handlePressIn = () => {
+    if (hapticEnabled) {
+      hapticService.light();
+    }
     scale.value = withTiming(scaleValue, {
       duration: 100,
       easing: Easing.out(Easing.cubic),
