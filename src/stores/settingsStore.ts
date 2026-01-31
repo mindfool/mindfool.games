@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AmbientType } from '../constants/audio';
+import type { GameMode } from '../types';
 import { audioService } from '../services/AudioService';
 import { hapticService } from '../services/HapticService';
 
@@ -10,6 +11,8 @@ export interface SettingsState {
   soundEffects: boolean;
   soundVolume: number; // 0.0 to 1.0
   ambientSound: AmbientType;
+  onboardingComplete: boolean;
+  lastPracticeMode: GameMode | null;
 
   // Actions
   setSkipPostGameFeedback: (skip: boolean) => Promise<void>;
@@ -17,6 +20,8 @@ export interface SettingsState {
   setSoundEffects: (enabled: boolean) => Promise<void>;
   setSoundVolume: (volume: number) => Promise<void>;
   setAmbientSound: (type: AmbientType) => Promise<void>;
+  setOnboardingComplete: (complete: boolean) => Promise<void>;
+  setLastPracticeMode: (mode: GameMode) => Promise<void>;
   loadSettings: () => Promise<void>;
 }
 
@@ -28,6 +33,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   soundEffects: true,
   soundVolume: 0.7,
   ambientSound: 'off' as AmbientType,
+  onboardingComplete: false,
+  lastPracticeMode: null,
 
   setSkipPostGameFeedback: async (skip: boolean) => {
     set({ skipPostGameFeedback: skip });
@@ -58,6 +65,16 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     await saveSettings(get());
   },
 
+  setOnboardingComplete: async (complete: boolean) => {
+    set({ onboardingComplete: complete });
+    await saveSettings(get());
+  },
+
+  setLastPracticeMode: async (mode: GameMode) => {
+    set({ lastPracticeMode: mode });
+    await saveSettings(get());
+  },
+
   loadSettings: async () => {
     try {
       const settingsJson = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
@@ -69,6 +86,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           soundEffects: settings.soundEffects ?? true,
           soundVolume: settings.soundVolume ?? 0.7,
           ambientSound: settings.ambientSound ?? 'off',
+          onboardingComplete: settings.onboardingComplete ?? false,
+          lastPracticeMode: settings.lastPracticeMode ?? null,
         });
 
         // Sync AudioService with loaded settings
@@ -92,6 +111,8 @@ async function saveSettings(state: SettingsState) {
       soundEffects: state.soundEffects,
       soundVolume: state.soundVolume,
       ambientSound: state.ambientSound,
+      onboardingComplete: state.onboardingComplete,
+      lastPracticeMode: state.lastPracticeMode,
     };
     await AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
   } catch (error) {
