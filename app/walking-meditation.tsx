@@ -1,13 +1,23 @@
+import { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { WalkingMeditation } from '../src/components/WalkingMeditation';
 import { useSessionComplete } from '../src/hooks/useSessionComplete';
+import { useExitConfirmation } from '../src/hooks/useExitConfirmation';
 import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
 
 export default function WalkingMeditationScreen() {
   const router = useRouter();
-  const handleComplete = useSessionComplete();
+  const [sessionActive, setSessionActive] = useState(true);
+  const handleSessionComplete = useSessionComplete();
+
+  useExitConfirmation(sessionActive);
+
+  const handleComplete = () => {
+    setSessionActive(false);
+    handleSessionComplete();
+  };
 
   return (
     <LinearGradient

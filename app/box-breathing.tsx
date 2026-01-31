@@ -1,17 +1,27 @@
+import { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Vibration } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { BoxBreathing } from '../src/components/BoxBreathing';
 import { useSessionComplete } from '../src/hooks/useSessionComplete';
+import { useExitConfirmation } from '../src/hooks/useExitConfirmation';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { COLORS, SPACING, TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../src/constants/tokens';
 import { ANIMATION_DURATIONS } from '../src/constants/animations';
 
 export default function BoxBreathingScreen() {
   const router = useRouter();
-  const handleComplete = useSessionComplete();
+  const [sessionActive, setSessionActive] = useState(true);
+  const handleSessionComplete = useSessionComplete();
   const hapticFeedback = useSettingsStore((state) => state.hapticFeedback);
+
+  useExitConfirmation(sessionActive);
+
+  const handleComplete = () => {
+    setSessionActive(false);
+    handleSessionComplete();
+  };
 
   const handleExit = () => {
     if (hapticFeedback) {

@@ -1,13 +1,23 @@
+import { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { MindfulEating } from '../src/components/MindfulEating';
 import { useSessionComplete } from '../src/hooks/useSessionComplete';
+import { useExitConfirmation } from '../src/hooks/useExitConfirmation';
 import { COLORS, SPACING, TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../src/constants/tokens';
 
 export default function MindfulEatingScreen() {
   const router = useRouter();
-  const handleComplete = useSessionComplete();
+  const [sessionActive, setSessionActive] = useState(true);
+  const handleSessionComplete = useSessionComplete();
+
+  useExitConfirmation(sessionActive);
+
+  const handleComplete = () => {
+    setSessionActive(false);
+    handleSessionComplete();
+  };
 
   return (
     <LinearGradient
