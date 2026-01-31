@@ -1,9 +1,11 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { Breathing478 } from '../src/components/Breathing478';
 import { useSessionComplete } from '../src/hooks/useSessionComplete';
 import { COLORS, SPACING, TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../src/constants/tokens';
+import { ANIMATION_DURATIONS } from '../src/constants/animations';
 
 export default function Breathing478Screen() {
   const router = useRouter();
@@ -15,23 +17,28 @@ export default function Breathing478Screen() {
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
-        <TouchableOpacity style={styles.exitButton} onPress={() => router.back()}>
-          <Text style={styles.exitButtonText}>✕</Text>
-        </TouchableOpacity>
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <View style={styles.headerBadge}>
-              <Text style={styles.headerEmoji}>🌙</Text>
+        <Animated.View
+          entering={FadeIn.duration(ANIMATION_DURATIONS.fadeIn).delay(100)}
+          style={{ flex: 1 }}
+        >
+          <TouchableOpacity style={styles.exitButton} onPress={() => router.back()}>
+            <Text style={styles.exitButtonText}>✕</Text>
+          </TouchableOpacity>
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <View style={styles.headerBadge}>
+                <Text style={styles.headerEmoji}>🌙</Text>
+              </View>
+              <Text style={styles.title}>4-7-8 Breathing</Text>
+              <Text style={styles.subtitle}>Dr. Weil's technique for deep relaxation</Text>
             </View>
-            <Text style={styles.title}>4-7-8 Breathing</Text>
-            <Text style={styles.subtitle}>Dr. Weil's technique for deep relaxation</Text>
-          </View>
 
-          <Breathing478
-            duration={180}
-            onComplete={handleComplete}
-          />
-        </View>
+            <Breathing478
+              duration={180}
+              onComplete={handleComplete}
+            />
+          </View>
+        </Animated.View>
       </SafeAreaView>
     </LinearGradient>
   );
