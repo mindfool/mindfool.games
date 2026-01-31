@@ -1,10 +1,12 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Vibration } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { BoxBreathing } from '../src/components/BoxBreathing';
 import { useSessionComplete } from '../src/hooks/useSessionComplete';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { COLORS, SPACING, TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../src/constants/tokens';
+import { ANIMATION_DURATIONS } from '../src/constants/animations';
 
 export default function BoxBreathingScreen() {
   const router = useRouter();
@@ -24,25 +26,30 @@ export default function BoxBreathingScreen() {
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
-        {/* Exit Button */}
-        <TouchableOpacity style={styles.exitButton} onPress={handleExit} activeOpacity={0.6}>
-          <Text style={styles.exitButtonText}>✕</Text>
-        </TouchableOpacity>
+        <Animated.View
+          entering={FadeIn.duration(ANIMATION_DURATIONS.fadeIn).delay(100)}
+          style={{ flex: 1 }}
+        >
+          {/* Exit Button */}
+          <TouchableOpacity style={styles.exitButton} onPress={handleExit} activeOpacity={0.6}>
+            <Text style={styles.exitButtonText}>✕</Text>
+          </TouchableOpacity>
 
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <View style={styles.headerBadge}>
-              <Text style={styles.headerEmoji}>⬜</Text>
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <View style={styles.headerBadge}>
+                <Text style={styles.headerEmoji}>⬜</Text>
+              </View>
+              <Text style={styles.title}>Box Breathing</Text>
+              <Text style={styles.subtitle}>Equal breathing for calm focus</Text>
             </View>
-            <Text style={styles.title}>Box Breathing</Text>
-            <Text style={styles.subtitle}>Equal breathing for calm focus</Text>
-          </View>
 
-          <BoxBreathing
-            duration={180}
-            onComplete={handleComplete}
-          />
-        </View>
+            <BoxBreathing
+              duration={180}
+              onComplete={handleComplete}
+            />
+          </View>
+        </Animated.View>
       </SafeAreaView>
     </LinearGradient>
   );
