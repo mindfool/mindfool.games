@@ -26,12 +26,22 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
   const [currentPhase, setCurrentPhase] = useState<BreathPhase>('inhale');
   const [phaseCount, setPhaseCount] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isFirstPhase = useRef(true);
 
   const scale = useSharedValue(0.6);
   const opacity = useSharedValue(0.3);
 
   // Box breathing: 4 seconds each phase
   const PHASE_DURATION = 4000; // 4 seconds
+
+  // Play tick sound on phase transitions (skip initial render)
+  useEffect(() => {
+    if (isFirstPhase.current) {
+      isFirstPhase.current = false;
+      return;
+    }
+    audioService.playSound('tick');
+  }, [currentPhase]);
 
   useEffect(() => {
     // Play start chime when exercise begins

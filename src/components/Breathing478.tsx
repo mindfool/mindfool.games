@@ -25,6 +25,7 @@ export function Breathing478({ duration = 180, onComplete, minDuration = 10 }: B
   const [currentPhase, setCurrentPhase] = useState<BreathPhase>('inhale');
   const [phaseCount, setPhaseCount] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isFirstPhase = useRef(true);
 
   const scale = useSharedValue(0.5);
   const opacity = useSharedValue(0.3);
@@ -33,6 +34,15 @@ export function Breathing478({ duration = 180, onComplete, minDuration = 10 }: B
   const INHALE_DURATION = 4000;
   const HOLD_DURATION = 7000;
   const EXHALE_DURATION = 8000;
+
+  // Play tick sound on phase transitions (skip initial render)
+  useEffect(() => {
+    if (isFirstPhase.current) {
+      isFirstPhase.current = false;
+      return;
+    }
+    audioService.playSound('tick');
+  }, [currentPhase]);
 
   useEffect(() => {
     // Play start chime when exercise begins
