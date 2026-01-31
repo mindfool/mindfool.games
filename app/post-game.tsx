@@ -8,6 +8,7 @@ import { ReflectionInput } from '../src/components/ReflectionInput';
 import { CountUpNumber } from '../src/components/animations/CountUpNumber';
 import { useSessionStore } from '../src/stores/sessionStore';
 import { audioService } from '../src/services/AudioService';
+import { hapticService } from '../src/services/HapticService';
 import { COLORS, SPACING, TYPOGRAPHY, SCATTER_LABELS } from '../src/constants/tokens';
 
 export default function PostGameScreen() {
@@ -19,9 +20,10 @@ export default function PostGameScreen() {
   const [postScore, setPostScore] = useState(5);
   const [showReflection, setShowReflection] = useState(false);
 
-  // Play completion chime when postgame screen appears
+  // Play completion chime and haptic when postgame screen appears
   useEffect(() => {
     audioService.playSound('chime-complete');
+    hapticService.success();
   }, []);
 
   const handleNext = () => {
