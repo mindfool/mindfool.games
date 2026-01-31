@@ -40,19 +40,19 @@ export default function HistoryScreen() {
 
   const filteredSessions = getFilteredSessions();
 
-  // Calculate stats
-  const totalSessions = sessions.length;
-  const avgImprovement = sessions.length > 0
-    ? sessions.reduce((sum, s) => sum + s.delta, 0) / sessions.length
+  // Calculate stats from FILTERED sessions (reflects time range + mode filters)
+  const totalSessions = filteredSessions.length;
+  const avgImprovement = filteredSessions.length > 0
+    ? filteredSessions.reduce((sum, s) => sum + s.delta, 0) / filteredSessions.length
     : 0;
 
-  // Find favorite mode (most played)
-  const modeCounts = sessions.reduce((acc, s) => {
+  // Find favorite mode from filtered sessions
+  const modeCounts = filteredSessions.reduce((acc, s) => {
     acc[s.mode] = (acc[s.mode] || 0) + 1;
     return acc;
   }, {} as Record<GameMode, number>);
 
-  const favoriteMode = Object.entries(modeCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
+  const favoriteMode = Object.entries(modeCounts).sort((a, b) => b[1] - a[1])[0]?.[0] as GameMode | undefined;
 
   const getModeEmoji = (mode: GameMode) => {
     switch (mode) {
@@ -112,7 +112,12 @@ export default function HistoryScreen() {
             <Text style={styles.headerEmoji}>📊</Text>
           </View>
           <Text style={styles.title}>Your Journey</Text>
-          <Text style={styles.subtitle}>{totalSessions} sessions completed</Text>
+          <Text style={styles.subtitle}>
+            {filteredSessions.length === sessions.length
+              ? `${totalSessions} sessions completed`
+              : `${filteredSessions.length} of ${sessions.length} sessions`
+            }
+          </Text>
         </View>
 
         {sessions.length === 0 ? (
@@ -176,11 +181,13 @@ export default function HistoryScreen() {
                 ]}>
                   {avgImprovement > 0 ? '+' : ''}{avgImprovement.toFixed(1)}
                 </Text>
-                <Text style={styles.statLabel}>Avg Change</Text>
+                <Text style={styles.statLabel}>Avg Improvement</Text>
               </View>
 
               <View style={styles.statCard}>
-                <Text style={styles.statValue}>{getModeEmoji(favoriteMode as GameMode)}</Text>
+                <Text style={styles.statValue}>
+                  {favoriteMode ? getModeEmoji(favoriteMode) : '—'}
+                </Text>
                 <Text style={styles.statLabel}>Favorite</Text>
               </View>
             </View>
