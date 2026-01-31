@@ -22,3 +22,18 @@ export const VOLUME_PRESETS = {
   medium: 0.5,
   high: 0.8,
 } as const;
+
+// Ambient sound assets (loops)
+export const AMBIENT_ASSETS: Record<Exclude<AmbientType, 'off'>, any> = {
+  rain: require('../../assets/sounds/rain.mp3'),
+  nature: require('../../assets/sounds/nature.mp3'),
+  whitenoise: require('../../assets/sounds/whitenoise.mp3'),
+};
+
+// Human-readable ambient names for UI
+export const AMBIENT_LABELS: Record<AmbientType, string> = {
+  off: 'None',
+  rain: 'Rain',
+  nature: 'Nature',
+  whitenoise: 'White Noise',
+};
