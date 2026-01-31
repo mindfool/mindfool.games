@@ -6,15 +6,39 @@ import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/cons
 import { GameMode } from '../src/types';
 import { useState } from 'react';
 
+type TimeRange = 'week' | 'month' | 'all';
+
 export default function HistoryScreen() {
   const router = useRouter();
   const sessions = useHistoryStore((state) => state.getSessions());
   const [filterMode, setFilterMode] = useState<GameMode | 'all'>('all');
+  const [timeRange, setTimeRange] = useState<TimeRange>('all');
 
-  // Filter sessions by mode
-  const filteredSessions = filterMode === 'all'
-    ? sessions
-    : sessions.filter(s => s.mode === filterMode);
+  // Filter sessions by BOTH mode AND time range
+  const getFilteredSessions = () => {
+    let filtered = sessions;
+
+    // Apply mode filter
+    if (filterMode !== 'all') {
+      filtered = filtered.filter(s => s.mode === filterMode);
+    }
+
+    // Apply time range filter
+    const now = new Date();
+    if (timeRange === 'week') {
+      const weekAgo = new Date(now);
+      weekAgo.setDate(now.getDate() - 7);
+      filtered = filtered.filter(s => new Date(s.timestamp) >= weekAgo);
+    } else if (timeRange === 'month') {
+      const monthAgo = new Date(now);
+      monthAgo.setMonth(now.getMonth() - 1);
+      filtered = filtered.filter(s => new Date(s.timestamp) >= monthAgo);
+    }
+
+    return filtered;
+  };
+
+  const filteredSessions = getFilteredSessions();
 
   // Calculate stats
   const totalSessions = sessions.length;
@@ -109,6 +133,34 @@ export default function HistoryScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
+            {/* Time Range Toggle */}
+            <View style={styles.timeRangeContainer}>
+              <TouchableOpacity
+                style={[styles.timeRangeButton, timeRange === 'week' && styles.timeRangeButtonActive]}
+                onPress={() => setTimeRange('week')}
+              >
+                <Text style={[styles.timeRangeText, timeRange === 'week' && styles.timeRangeTextActive]}>
+                  Week
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.timeRangeButton, timeRange === 'month' && styles.timeRangeButtonActive]}
+                onPress={() => setTimeRange('month')}
+              >
+                <Text style={[styles.timeRangeText, timeRange === 'month' && styles.timeRangeTextActive]}>
+                  Month
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.timeRangeButton, timeRange === 'all' && styles.timeRangeButtonActive]}
+                onPress={() => setTimeRange('all')}
+              >
+                <Text style={[styles.timeRangeText, timeRange === 'all' && styles.timeRangeTextActive]}>
+                  All Time
+                </Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Stats Cards */}
             <View style={styles.statsGrid}>
               <View style={styles.statCard}>
@@ -320,6 +372,31 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  timeRangeContainer: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.xs,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.sm,
+  },
+  timeRangeButton: {
+    flex: 1,
+    paddingVertical: SPACING.md,
+    alignItems: 'center',
+    borderRadius: BORDER_RADIUS.lg,
+  },
+  timeRangeButtonActive: {
+    backgroundColor: COLORS.primary,
+  },
+  timeRangeText: {
+    ...TYPOGRAPHY.bodyMedium,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
+  },
+  timeRangeTextActive: {
+    color: COLORS.white,
   },
   statsGrid: {
     flexDirection: 'row',
