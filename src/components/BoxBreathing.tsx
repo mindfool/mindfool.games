@@ -5,9 +5,10 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSequence,
-  Easing,
+  FadeIn,
 } from 'react-native-reanimated';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
+import { BREATHING_EASING, ANIMATION_DURATIONS } from '../constants/animations';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -60,7 +61,7 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
   const cycleBreath = () => {
     // Inhale (4s)
     setCurrentPhase('inhale');
-    scale.value = withTiming(1, { duration: PHASE_DURATION, easing: Easing.inOut(Easing.ease) });
+    scale.value = withTiming(1, { duration: PHASE_DURATION, easing: BREATHING_EASING });
     opacity.value = withTiming(1, { duration: PHASE_DURATION });
 
     setTimeout(() => {
@@ -71,7 +72,7 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
       setTimeout(() => {
         // Exhale (4s)
         setCurrentPhase('exhale');
-        scale.value = withTiming(0.6, { duration: PHASE_DURATION, easing: Easing.inOut(Easing.ease) });
+        scale.value = withTiming(0.6, { duration: PHASE_DURATION, easing: BREATHING_EASING });
         opacity.value = withTiming(0.3, { duration: PHASE_DURATION });
 
         setTimeout(() => {
@@ -134,8 +135,13 @@ export function BoxBreathing({ duration = 180, onComplete, minDuration = 10 }: B
       </View>
 
       <View style={styles.phaseContainer}>
-        <Text style={styles.phaseText}>{getPhaseText()}</Text>
-        <Text style={styles.phaseSubtext}>{getPhaseInstruction()}</Text>
+        <Animated.View
+          key={currentPhase}
+          entering={FadeIn.duration(ANIMATION_DURATIONS.fadeIn)}
+        >
+          <Text style={styles.phaseText}>{getPhaseText()}</Text>
+          <Text style={styles.phaseSubtext}>{getPhaseInstruction()}</Text>
+        </Animated.View>
         <Text style={styles.cycleCount}>Cycle {Math.floor(phaseCount / 4) + 1}</Text>
       </View>
 
