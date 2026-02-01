@@ -11,10 +11,15 @@ import { useSessionStore } from '../src/stores/sessionStore';
 import { useHistoryStore } from '../src/stores/historyStore';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { audioService } from '../src/services/AudioService';
+import { hapticService } from '../src/services/HapticService';
 import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
 import { GameMode } from '../src/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+// Constrain to mobile width on desktop (like lifegame)
+const MAX_MOBILE_WIDTH = 428;
+const EFFECTIVE_WIDTH = Math.min(SCREEN_WIDTH, MAX_MOBILE_WIDTH);
 
 interface Practice {
   id: GameMode;
@@ -124,6 +129,7 @@ export default function HomeScreen() {
   const startSession = useSessionStore((state) => state.startSession);
   const loadSettings = useSettingsStore((state) => state.loadSettings);
   const soundEffects = useSettingsStore((state) => state.soundEffects);
+  const hapticFeedback = useSettingsStore((state) => state.hapticFeedback);
   const setLastPracticeMode = useSettingsStore((state) => state.setLastPracticeMode);
   const lastSession = useHistoryStore((state) => state.getLastSession());
   const [calmScore, setCalmScore] = useState(5);
@@ -149,6 +155,11 @@ export default function HomeScreen() {
   useEffect(() => {
     audioService.setEnabled(soundEffects);
   }, [soundEffects]);
+
+  // Sync haptic enabled state with settings
+  useEffect(() => {
+    hapticService.setEnabled(hapticFeedback);
+  }, [hapticFeedback]);
 
   useEffect(() => {
     loadSettings();
@@ -178,11 +189,12 @@ export default function HomeScreen() {
       colors={[COLORS.backgroundLight, COLORS.background, COLORS.backgroundMedium]}
       style={styles.gradient}
     >
-      <SafeAreaView style={styles.container}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
+      <View style={styles.outerContainer}>
+        <SafeAreaView style={styles.container}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
@@ -270,20 +282,27 @@ export default function HomeScreen() {
               Tap any practice to begin immediately. Each session is 2-5 minutes.
             </Text>
           </View>
-        </ScrollView>
-      </SafeAreaView>
+          </ScrollView>
+        </SafeAreaView>
+      </View>
     </LinearGradient>
   );
 }
 
-const CARD_WIDTH = (SCREEN_WIDTH - SPACING.xl * 2 - SPACING.lg) / 2;
+const CARD_WIDTH = (EFFECTIVE_WIDTH - SPACING.xl * 2 - SPACING.lg) / 2;
 
 const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
+  outerContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
+    width: '100%',
+    maxWidth: MAX_MOBILE_WIDTH,
   },
   scrollContent: {
     flexGrow: 1,
@@ -358,8 +377,8 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   sectionTitle: {
-    ...TYPOGRAPHY.heading1,
-    fontSize: 22,
+    fontSize: 24,
+    lineHeight: 30,
     color: COLORS.textPrimary,
     fontWeight: '700',
     marginBottom: SPACING.lg,
@@ -386,14 +405,15 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   practiceTitle: {
-    ...TYPOGRAPHY.heading2,
-    fontSize: 16,
+    fontSize: 18,
+    lineHeight: 24,
     color: COLORS.textPrimary,
     fontWeight: '700',
     marginBottom: 4,
   },
   practiceDescription: {
-    ...TYPOGRAPHY.bodySmall,
+    fontSize: 14,
+    lineHeight: 20,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -409,7 +429,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   tipText: {
-    ...TYPOGRAPHY.bodyMedium,
+    fontSize: 16,
+    lineHeight: 22,
     color: COLORS.textSecondary,
     flex: 1,
   },

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Animated, Vibration } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Animated } from 'react-native';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/tokens';
+import { hapticService } from '../services/HapticService';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -32,12 +33,12 @@ export function NumberBubbles({
   // Generate random positions for bubbles
   const generateBubbles = () => {
     const newBubbles: Bubble[] = [];
-    const bubbleSize = 70;
-    const padding = 40;
+    const bubbleSize = 100;
+    const padding = 20;
 
     for (let i = 1; i <= 10; i++) {
       const x = Math.random() * (SCREEN_WIDTH - bubbleSize - padding * 2) + padding;
-      const y = Math.random() * (SCREEN_HEIGHT * 0.6 - bubbleSize - padding * 2) + padding;
+      const y = Math.random() * (SCREEN_HEIGHT * 0.5 - bubbleSize - padding * 2) + padding;
 
       newBubbles.push({
         number: i,
@@ -72,20 +73,20 @@ export function NumberBubbles({
   const handleBubbleTap = (number: number) => {
     if (number === currentTarget) {
       // Correct tap - success haptic
-      Vibration.vibrate(10);
+      hapticService.light();
       setStreak(prev => prev + 1);
 
       if (currentTarget === 10) {
         // Completed sequence - stronger haptic
-        Vibration.vibrate([0, 10, 50, 10]);
+        hapticService.success();
         setCurrentTarget(1);
         generateBubbles(); // Regenerate positions for new round
       } else {
         setCurrentTarget(prev => prev + 1);
       }
     } else {
-      // Wrong tap - error haptic (longer vibration)
-      Vibration.vibrate([0, 50, 100, 50]);
+      // Wrong tap - error haptic (heavy feedback)
+      hapticService.heavy();
       setErrors(prev => prev + 1);
       setStreak(0);
       setCurrentTarget(1); // Reset to 1 on error
@@ -192,9 +193,9 @@ const styles = StyleSheet.create({
   },
   bubble: {
     position: 'absolute',
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: COLORS.white,
     borderWidth: 3,
     borderColor: COLORS.primaryLight,
@@ -221,9 +222,10 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   bubbleNumber: {
-    ...TYPOGRAPHY.displayLarge,
-    color: COLORS.primary,
+    fontSize: 48,
+    lineHeight: 54,
     fontWeight: '700',
+    color: COLORS.primary,
   },
   targetNumber: {
     color: COLORS.white,
@@ -249,12 +251,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statLabel: {
-    ...TYPOGRAPHY.bodySmall,
+    fontSize: 16,
+    lineHeight: 20,
     color: COLORS.textSecondary,
     marginBottom: 4,
   },
   statValue: {
-    ...TYPOGRAPHY.displayMedium,
+    fontSize: 28,
+    lineHeight: 34,
     color: COLORS.primary,
     fontWeight: '700',
   },
@@ -265,13 +269,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xl,
   },
   instructionsText: {
-    ...TYPOGRAPHY.bodyLarge,
+    fontSize: 20,
+    lineHeight: 26,
     color: COLORS.textPrimary,
     fontWeight: '600',
     marginBottom: 4,
   },
   instructionsSubtext: {
-    ...TYPOGRAPHY.bodyMedium,
+    fontSize: 16,
+    lineHeight: 22,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },

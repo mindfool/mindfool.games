@@ -17,6 +17,7 @@ import { useSettingsStore } from '../src/stores/settingsStore';
 import { COLORS, SPACING, TYPOGRAPHY, BORDER_RADIUS, SHADOWS } from '../src/constants/tokens';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import { Platform } from 'react-native';
 
 interface SlideData {
   id: string;
@@ -66,10 +67,23 @@ export default function OnboardingScreen() {
 
   const handleNext = () => {
     if (currentIndex < SLIDES.length - 1) {
-      flatListRef.current?.scrollToIndex({
-        index: currentIndex + 1,
-        animated: true,
-      });
+      const nextIndex = currentIndex + 1;
+      // Use scrollToOffset on web as scrollToIndex has issues with React Native Web
+      if (Platform.OS === 'web') {
+        flatListRef.current?.scrollToOffset({
+          offset: nextIndex * SCREEN_WIDTH,
+          animated: true,
+        });
+      } else {
+        flatListRef.current?.scrollToIndex({
+          index: nextIndex,
+          animated: true,
+        });
+      }
+      // Manually update the index for web since viewableItemsChanged may not fire
+      if (Platform.OS === 'web') {
+        setCurrentIndex(nextIndex);
+      }
     }
   };
 
