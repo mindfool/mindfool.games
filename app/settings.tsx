@@ -4,8 +4,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Slider from '@react-native-community/slider';
 import { useSettingsStore } from '../src/stores/settingsStore';
-import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
+import { COLORS, SPACING, SHADOWS, BORDER_RADIUS } from '../src/constants/tokens';
 import { AMBIENT_LABELS, AmbientType } from '../src/constants/audio';
+
+const MAX_MOBILE_WIDTH = 428;
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -32,11 +34,12 @@ export default function SettingsScreen() {
       colors={[COLORS.backgroundLight, COLORS.background, COLORS.backgroundMedium]}
       style={styles.gradient}
     >
-      <SafeAreaView style={styles.container}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
+      <View style={styles.outerContainer}>
+        <SafeAreaView style={styles.container}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity
@@ -180,8 +183,9 @@ export default function SettingsScreen() {
               </View>
             </View>
           </View>
-        </ScrollView>
-      </SafeAreaView>
+          </ScrollView>
+        </SafeAreaView>
+      </View>
     </LinearGradient>
   );
 }
@@ -190,8 +194,14 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
+  outerContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
+    width: '100%',
+    maxWidth: MAX_MOBILE_WIDTH,
   },
   scrollContent: {
     flexGrow: 1,
@@ -233,14 +243,15 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
   title: {
-    ...TYPOGRAPHY.displayLarge,
     fontSize: 32,
+    lineHeight: 38,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
     fontWeight: '800',
   },
   subtitle: {
-    ...TYPOGRAPHY.bodyLarge,
+    fontSize: 18,
+    lineHeight: 24,
     color: COLORS.textSecondary,
   },
   content: {
@@ -250,8 +261,8 @@ const styles = StyleSheet.create({
     marginBottom: SPACING['2xl'],
   },
   sectionTitle: {
-    ...TYPOGRAPHY.heading1,
-    fontSize: 20,
+    fontSize: 22,
+    lineHeight: 28,
     color: COLORS.textPrimary,
     fontWeight: '700',
     marginBottom: SPACING.lg,
@@ -271,16 +282,16 @@ const styles = StyleSheet.create({
     marginRight: SPACING.lg,
   },
   settingTitle: {
-    ...TYPOGRAPHY.heading2,
-    fontSize: 16,
+    fontSize: 18,
+    lineHeight: 24,
     color: COLORS.textPrimary,
     fontWeight: '600',
     marginBottom: 4,
   },
   settingDescription: {
-    ...TYPOGRAPHY.bodyMedium,
-    color: COLORS.textSecondary,
+    fontSize: 15,
     lineHeight: 20,
+    color: COLORS.textSecondary,
   },
   aboutCard: {
     backgroundColor: COLORS.primarySoft,
@@ -294,19 +305,21 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   aboutTitle: {
-    ...TYPOGRAPHY.heading1,
     fontSize: 24,
+    lineHeight: 30,
     color: COLORS.textPrimary,
     fontWeight: '800',
     marginBottom: SPACING.xs,
   },
   aboutVersion: {
-    ...TYPOGRAPHY.bodyMedium,
+    fontSize: 16,
+    lineHeight: 22,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
   },
   aboutText: {
-    ...TYPOGRAPHY.bodyLarge,
+    fontSize: 16,
+    lineHeight: 22,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -327,7 +340,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   ambientOptionText: {
-    ...TYPOGRAPHY.bodyMedium,
+    fontSize: 15,
+    lineHeight: 20,
     color: COLORS.textPrimary,
     fontWeight: '500',
   },

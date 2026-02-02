@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { CalmSlider } from '../src/components/CalmSlider';
@@ -9,7 +9,9 @@ import { CountUpNumber } from '../src/components/animations/CountUpNumber';
 import { useSessionStore } from '../src/stores/sessionStore';
 import { audioService } from '../src/services/AudioService';
 import { hapticService } from '../src/services/HapticService';
-import { COLORS, SPACING, TYPOGRAPHY, SCATTER_LABELS } from '../src/constants/tokens';
+import { COLORS, SPACING, SCATTER_LABELS } from '../src/constants/tokens';
+
+const MAX_MOBILE_WIDTH = 428;
 
 export default function PostGameScreen() {
   const router = useRouter();
@@ -61,10 +63,12 @@ export default function PostGameScreen() {
 
   return (
     <SafeAreaView style={styles.container} testID="post-game-screen">
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.outerContainer}>
+        <View style={styles.innerContainer}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
         <Animated.View style={styles.header} entering={FadeInUp.duration(400)}>
           <Text style={styles.title} testID="session-complete-title">Session Complete!</Text>
         </Animated.View>
@@ -142,7 +146,9 @@ export default function PostGameScreen() {
             </>
           )}
         </View>
-      </ScrollView>
+          </ScrollView>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -152,9 +158,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.backgroundLight,
   },
+  outerContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  innerContainer: {
+    flex: 1,
+    width: '100%',
+    maxWidth: MAX_MOBILE_WIDTH,
+  },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: SPACING.lg,
+    paddingHorizontal: SPACING.xl,
   },
   header: {
     paddingTop: SPACING['2xl'],
@@ -162,7 +177,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    ...TYPOGRAPHY.displayMedium,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
   content: {
@@ -172,43 +189,48 @@ const styles = StyleSheet.create({
   comparisonCard: {
     backgroundColor: COLORS.white,
     borderRadius: 16,
-    padding: SPACING.lg,
+    padding: SPACING.xl,
     marginBottom: SPACING.lg,
   },
   comparisonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
   },
   comparisonValueRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   comparisonLabel: {
-    ...TYPOGRAPHY.bodyLarge,
+    fontSize: 18,
+    lineHeight: 24,
     color: COLORS.textSecondary,
   },
   comparisonValue: {
-    ...TYPOGRAPHY.bodyLarge,
+    fontSize: 18,
+    lineHeight: 24,
     fontWeight: '600',
     color: COLORS.textPrimary,
   },
   deltaCard: {
-    marginTop: SPACING.md,
-    padding: SPACING.md,
+    marginTop: SPACING.lg,
+    padding: SPACING.lg,
     borderRadius: 12,
     alignItems: 'center',
   },
   deltaText: {
-    ...TYPOGRAPHY.heading2,
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '600',
     textAlign: 'center',
   },
   spacer: {
     height: SPACING.xl,
   },
   infoText: {
-    ...TYPOGRAPHY.bodyMedium,
+    fontSize: 16,
+    lineHeight: 22,
     color: COLORS.textSecondary,
     textAlign: 'center',
     marginTop: SPACING.lg,
