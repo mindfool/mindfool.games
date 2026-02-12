@@ -15,7 +15,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mindfool.games"
+      "bundleIdentifier": "com.mindfool.games",
+      "associatedDomains": ["applinks:app.mindfool.games"]
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +25,21 @@
       },
       "package": "com.mindfool.games",
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "app.mindfool.games",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "platforms": [
       "ios",
