@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
+import { PWAInstallPrompt } from '../src/components';
 
 export default function RootLayout() {
   const router = useRouter();
@@ -56,6 +57,7 @@ export default function RootLayout() {
             }}
           />
         </Stack>
+        <PWAInstallPrompt />
       </GestureHandlerRootView>
     </ErrorBoundary>
   );
