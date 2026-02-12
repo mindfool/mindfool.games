@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:web": "expo export --platform web",
+    "build:web": "expo export --platform web && npx workbox-cli generateSW workbox-config.js",
+    "preview:web": "npm run build:web && npx serve dist",
     "test": "jest",
     "lint": "eslint ."
   },
@@ -52,7 +53,8 @@
     "react-refresh": "^0.18.0",
     "sharp": "^0.34.5",
     "typescript": "~5.9.2",
-    "typescript-eslint": "^8.21.0"
+    "typescript-eslint": "^8.21.0",
+    "workbox-cli": "^7.4.0"
   },
   "private": true
 }
