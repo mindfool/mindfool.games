@@ -11,6 +11,8 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useHistoryStore } from '../stores/historyStore';
 import { calculateStreaks, practicedToday } from '../utils/streaksCalculator';
+import { buildStreakShareContent } from '../lib/sharing/buildShareUrl';
+import { ShareButton } from './ShareButton';
 import { COLORS, SPACING, TYPOGRAPHY, SHADOWS, BORDER_RADIUS } from '../constants/tokens';
 
 export function StreakCard() {
@@ -56,6 +58,13 @@ export function StreakCard() {
     return null;
   }
 
+  // Get most recent practice for share content
+  const lastSession = sessions[0];
+  const shareContent = buildStreakShareContent(
+    streakInfo.currentStreak,
+    lastSession?.mode
+  );
+
   return (
     <LinearGradient
       colors={['#FEF3C7', '#FFFBEB']}
@@ -63,14 +72,21 @@ export function StreakCard() {
       testID="streak-card"
     >
       <View style={styles.content}>
-        <View style={styles.streakSection}>
-          <View style={styles.fireContainer}>
-            <Animated.Text style={[styles.fireEmoji, animatedFlameStyle]}>🔥</Animated.Text>
+        <View style={styles.header}>
+          <View style={styles.streakSection}>
+            <View style={styles.fireContainer}>
+              <Animated.Text style={[styles.fireEmoji, animatedFlameStyle]}>🔥</Animated.Text>
+            </View>
+            <View style={styles.streakInfo}>
+              <Text style={styles.streakNumber} testID="streak-count">{streakInfo.currentStreak}</Text>
+              <Text style={styles.streakLabel}>Day Streak</Text>
+            </View>
           </View>
-          <View style={styles.streakInfo}>
-            <Text style={styles.streakNumber} testID="streak-count">{streakInfo.currentStreak}</Text>
-            <Text style={styles.streakLabel}>Day Streak</Text>
-          </View>
+
+          {/* Share button - only show if streak > 0 */}
+          {streakInfo.currentStreak > 0 && (
+            <ShareButton content={shareContent} />
+          )}
         </View>
 
         <View style={styles.meta}>
@@ -100,10 +116,16 @@ const styles = StyleSheet.create({
   content: {
     padding: SPACING.xl,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.lg,
+  },
   streakSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SPACING.lg,
+    flex: 1,
   },
   fireContainer: {
     width: 72,
