@@ -5,3 +5,4 @@ export { LastSessionCard } from './LastSessionCard';
 export { ReflectionInput } from './ReflectionInput';
 export { MobileContainer } from './MobileContainer';
 export { PWAInstallPrompt } from './PWAInstallPrompt';
+export { ShareButton } from './ShareButton';
